@@ -1,0 +1,46 @@
+---
+title: Home Server Infrastructure Journey
+description: Notes from setting up a personal home server with an eye toward reliability, learning, and sensible complexity.
+date: 2026-05-19
+status: Active
+tags:
+  - homelab
+  - infrastructure
+  - self-hosting
+  - systems
+---
+
+## Goal
+
+Build a home server setup that is stable enough to be useful, flexible enough to grow, and simple enough that I can still understand it six months from now.
+
+## Current setup
+
+Right now the stack is intentionally modest:
+
+- one low-power machine
+- Docker for services
+- a small set of self-hosted apps
+- local backups plus off-site copies for important files
+- documentation for ports, volumes, and service dependencies
+
+The main rule is that every layer I add should solve a real problem.
+
+## Why this matters
+
+Home server projects are a good test of practical systems thinking. They force me to care about uptime, backup strategy, network basics, and maintenance overhead, not just the fun part of getting a container to run once.
+
+## What I learned
+
+- Reliability starts with boring decisions, not clever ones.
+- Documentation matters more as soon as the second service is added.
+- Naming volumes and folders clearly saves time later.
+- Backups are part of the setup, not an optional future task.
+- Small infrastructure projects teach tradeoffs faster than reading architecture threads.
+
+## Problems to solve next
+
+- Improve monitoring without adding noise.
+- Make restores as easy to test as backups are to schedule.
+- Reduce the number of manual steps for updating services.
+- Decide which services are worth keeping local and which are better left hosted elsewhere.

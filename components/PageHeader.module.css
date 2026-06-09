@@ -1,0 +1,23 @@
+.header {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.eyebrow,
+.intro {
+  margin: 0;
+}
+
+.eyebrow {
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.intro {
+  max-width: 42rem;
+  font-size: 1.05rem;
+  color: var(--color-text-muted);
+}
