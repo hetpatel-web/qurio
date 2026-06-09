@@ -4,6 +4,12 @@ Qurio is a personal digital garden for documenting experiments, builds, notes, a
 
 Core idea: curious people learn by building.
 
+## Why Qurio Exists
+
+Qurio exists to help curious people become more capable of figuring things out for themselves by documenting real experiments, builds, notes, and lessons learned through action.
+
+Read the full brand foundation in [docs/why-qurio-exists.md](docs/why-qurio-exists.md).
+
 ## Project structure
 
 ```text
