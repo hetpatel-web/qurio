@@ -5,7 +5,7 @@ import './globals.css';
 import '@/styles/variables.css';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://qurio.vercel.app'),
+  metadataBase: new URL('https://www.qurio.ca'),
   title: {
     default: 'Qurio',
     template: '%s | Qurio',
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     title: 'Qurio',
     description: 'Curiosity turned into action.',
     type: 'website',
-    url: 'https://qurio.vercel.app',
+    url: 'https://www.qurio.ca',
     siteName: 'Qurio',
   },
   twitter: {
