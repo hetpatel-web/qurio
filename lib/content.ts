@@ -9,6 +9,14 @@ export const collections = ['experiments', 'builds', 'notes'] as const;
 
 export type CollectionName = (typeof collections)[number];
 
+type RawFrontmatter = {
+  title: string;
+  description: string;
+  date: string | Date;
+  status: string;
+  tags: string[];
+};
+
 export type Frontmatter = {
   title: string;
   description: string;
@@ -48,6 +56,14 @@ function resolveCollectionPath(collection: CollectionName) {
   return path.join(rootContentDirectory, collection);
 }
 
+function normalizeDate(date: string | Date) {
+  if (date instanceof Date) {
+    return date.toISOString().slice(0, 10);
+  }
+
+  return date;
+}
+
 async function readDirectory(collection: CollectionName) {
   const directory = resolveCollectionPath(collection);
   return fs.readdir(directory);
@@ -58,11 +74,17 @@ async function readFile(collectionPath: string, slug: string) {
   return fs.readFile(filePath, 'utf8');
 }
 
-function mapMeta(slug: string, frontmatter: Frontmatter): ContentMeta {
+function mapMeta(slug: string, frontmatter: RawFrontmatter): ContentMeta {
+  const normalizedDate = normalizeDate(frontmatter.date);
+
   return {
-    ...frontmatter,
+    title: frontmatter.title,
+    description: frontmatter.description,
+    status: frontmatter.status,
+    tags: frontmatter.tags,
+    date: normalizedDate,
     slug,
-    dateLabel: formatDate(frontmatter.date),
+    dateLabel: formatDate(normalizedDate),
   };
 }
 
@@ -77,7 +99,7 @@ export async function getAllContent(collection: CollectionName) {
         const slug = filename.replace(/\.mdx$/, '');
         const source = await readFile(collectionPath, slug);
         const { data } = matter(source);
-        return mapMeta(slug, data as Frontmatter);
+        return mapMeta(slug, data as RawFrontmatter);
       }),
   );
 
@@ -92,7 +114,7 @@ export async function getLatestContent(collection: CollectionName) {
 export async function getContentBySlug(collection: CollectionName, slug: string) {
   const collectionPath = resolveCollectionPath(collection);
   const source = await readFile(collectionPath, slug);
-  const { content, frontmatter } = await compileMDX<Frontmatter>({
+  const { content, frontmatter } = await compileMDX<RawFrontmatter>({
     source,
     components: mdxComponents,
     options: {

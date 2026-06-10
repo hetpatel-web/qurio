@@ -1,0 +1,219 @@
+---
+title: "Qurio Note #001 - Building My First Local AI Lab"
+description: How I set up a local AI lab with Ollama and n8n, and what it taught me about containers, ports, volumes, and self-hosting.
+date: 2026-06-09
+status: Published
+tags:
+  - ai
+  - self-hosting
+  - docker
+  - ollama
+  - n8n
+  - infrastructure
+---
+
+## Why
+
+I want to learn AI, automation, and self-hosted infrastructure without spending money on subscriptions or APIs.
+
+Rather than jumping straight into building products, I decided to first understand the foundation that many modern AI systems are built on.
+
+The objective was simple:
+
+Create a local environment where AI models and automation tools can run on my own hardware.
+
+---
+
+## What I Built
+
+I deployed two services on my Ubuntu home server using Docker Compose:
+
+- Ollama
+- n8n
+
+The setup currently looks like:
+
+```text
+Server
+├── Ubuntu
+├── Portainer
+├── Ollama
+└── n8n
+```
+
+This creates the foundation for running local AI models and building automation workflows.
+
+---
+
+## What I Learned
+
+### 1. Containers Are Not Virtual Machines
+
+Before today, I loosely understood Docker as "a way to run applications."
+
+A more accurate understanding is that a container packages an application and its dependencies into an isolated environment.
+
+Each container behaves like its own small system while sharing the host operating system kernel.
+
+This makes applications easier to deploy and reduces dependency conflicts.
+
+---
+
+### 2. Images and Containers Are Different
+
+An image is a blueprint.
+
+A container is a running instance of that blueprint.
+
+Example:
+
+Image:
+`ollama/ollama`
+
+Container:
+`qurio-ollama`
+
+The image remains unchanged while containers can be started, stopped, and recreated.
+
+---
+
+### 3. Docker Compose Is Infrastructure as Code
+
+Instead of manually starting containers one at a time, Docker Compose allows infrastructure to be described in a single file.
+
+Running one command:
+
+```bash
+docker compose up -d
+```
+
+creates the entire environment.
+
+This makes setups reproducible and easier to maintain.
+
+---
+
+### 4. Ports Expose Services
+
+Applications listen on ports.
+
+Examples:
+
+- `22` = SSH
+- `80` = HTTP
+- `443` = HTTPS
+- `5678` = n8n
+- `11434` = Ollama
+
+Ports act like doors that allow traffic to reach a service.
+
+Without exposing the correct port, the service may be running but inaccessible.
+
+---
+
+### 5. Volumes Protect Data
+
+Containers are temporary.
+
+Deleting a container can remove everything inside it.
+
+Volumes solve this problem by storing important data outside the container.
+
+For this setup:
+
+Ollama volume:
+
+- AI models
+- Model metadata
+
+n8n volume:
+
+- Workflows
+- Credentials
+- Settings
+
+This allows containers to be recreated without losing data.
+
+---
+
+### 6. Ollama Is Not The AI Model
+
+This was an important distinction.
+
+Ollama is the runtime that serves AI models.
+
+The actual intelligence comes from the model itself.
+
+Examples of models:
+
+- Qwen
+- Llama
+- Gemma
+- Mistral
+
+At this stage I have installed Ollama but have not yet downloaded a model.
+
+An analogy:
+
+`Ollama = Engine`
+
+`Model = Driver`
+
+Both are required.
+
+---
+
+### 7. Self-Hosting Changes The Learning Experience
+
+Using cloud services is convenient.
+
+Running services locally forces me to understand:
+
+- Networking
+- Containers
+- Storage
+- Infrastructure
+- Security
+- Deployment
+
+This creates a deeper understanding of how systems actually work.
+
+---
+
+## Unexpected Issue
+
+When opening n8n I encountered a secure cookie warning.
+
+The issue was caused by n8n expecting HTTPS while I was accessing it through HTTP.
+
+This introduced a new concept:
+
+Secure cookies can only be used over encrypted HTTPS connections.
+
+For local learning environments, this can be disabled temporarily.
+
+For production systems, HTTPS should always be used.
+
+---
+
+## Next Step
+
+Download a local language model into Ollama and verify that prompts can be processed entirely on my own hardware.
+
+Once working, connect Ollama to n8n and build the first automation workflow.
+
+---
+
+## Key Takeaway
+
+The most valuable lesson was realizing that modern AI systems are often assembled from simple building blocks:
+
+```text
+Infrastructure
+-> Containers
+-> Services
+-> Models
+-> Workflows
+```
+
+Understanding the layers beneath the tools is just as important as using the tools themselves.
