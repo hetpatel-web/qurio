@@ -1,6 +1,6 @@
 ---
 title: "Qurio Note #001 - Building My First Local AI Lab"
-description: How I set up a local AI lab with Ollama and n8n, and what it taught me about containers, ports, volumes, and self-hosting.
+description: Building a local AI lab with Ollama and n8n, then learning how models, containers, volumes, and self-hosted infrastructure fit together.
 date: 2026-06-09
 status: Published
 tags:
@@ -47,9 +47,7 @@ This creates the foundation for running local AI models and building automation 
 
 ## What I Learned
 
-### 1. Containers Are Not Virtual Machines
-
-Before today, I loosely understood Docker as "a way to run applications."
+### Containers Are Not Virtual Machines
 
 A more accurate understanding is that a container packages an application and its dependencies into an isolated environment.
 
@@ -59,7 +57,7 @@ This makes applications easier to deploy and reduces dependency conflicts.
 
 ---
 
-### 2. Images and Containers Are Different
+### Images and Containers Are Different
 
 An image is a blueprint.
 
@@ -77,11 +75,11 @@ The image remains unchanged while containers can be started, stopped, and recrea
 
 ---
 
-### 3. Docker Compose Is Infrastructure as Code
+### Docker Compose Is Infrastructure as Code
 
 Instead of manually starting containers one at a time, Docker Compose allows infrastructure to be described in a single file.
 
-Running one command:
+Running:
 
 ```bash
 docker compose up -d
@@ -93,7 +91,7 @@ This makes setups reproducible and easier to maintain.
 
 ---
 
-### 4. Ports Expose Services
+### Ports Expose Services
 
 Applications listen on ports.
 
@@ -111,7 +109,7 @@ Without exposing the correct port, the service may be running but inaccessible.
 
 ---
 
-### 5. Volumes Protect Data
+### Volumes Protect Data
 
 Containers are temporary.
 
@@ -121,12 +119,12 @@ Volumes solve this problem by storing important data outside the container.
 
 For this setup:
 
-Ollama volume:
+Ollama volume stores:
 
 - AI models
 - Model metadata
 
-n8n volume:
+n8n volume stores:
 
 - Workflows
 - Credentials
@@ -136,34 +134,151 @@ This allows containers to be recreated without losing data.
 
 ---
 
-### 6. Ollama Is Not The AI Model
+## Understanding Ollama
 
-This was an important distinction.
+One of the biggest lessons was realizing that Ollama is not the AI itself.
 
-Ollama is the runtime that serves AI models.
+Ollama is a runtime.
 
-The actual intelligence comes from the model itself.
+Its job is to:
 
-Examples of models:
+- Download models
+- Store models
+- Load models into memory
+- Serve models through an API
+
+Without a model installed, Ollama is simply an engine waiting for something to run.
+
+An analogy:
+
+Docker runs containers.
+
+Ollama runs AI models.
+
+---
+
+## Understanding AI Models
+
+The actual intelligence comes from the model.
+
+Examples:
 
 - Qwen
 - Llama
 - Gemma
 - Mistral
 
-At this stage I have installed Ollama but have not yet downloaded a model.
+A model contains the learned patterns, relationships, and knowledge that allow it to generate responses.
 
-An analogy:
-
-`Ollama = Engine`
-
-`Model = Driver`
-
-Both are required.
+The model is what performs reasoning, summarization, writing, and question answering.
 
 ---
 
-### 7. Self-Hosting Changes The Learning Experience
+## Why I Chose Qwen 2.5 3B
+
+The first model selected for this lab was:
+
+`qwen2.5:3b`
+
+Breaking it down:
+
+Qwen = model family developed by Alibaba
+
+2.5 = model generation/version
+
+3B = approximately 3 billion parameters
+
+Parameters can be thought of as learned weights that store patterns acquired during training.
+
+Larger models generally provide stronger reasoning and knowledge but require more memory and compute resources.
+
+Because my server currently has 8 GB of RAM, a 3B model offers a good balance between capability and performance.
+
+The goal of this lab is learning and experimentation rather than running the largest possible model.
+
+---
+
+## What Does "Pulling a Model" Mean?
+
+Pulling a model is similar to pulling a Docker image.
+
+Command:
+
+```bash
+docker exec -it qurio-ollama ollama pull qwen2.5:3b
+```
+
+This downloads the model from the Ollama registry and stores it locally.
+
+Once downloaded, the model can be used without needing to download it again.
+
+The model becomes part of the local infrastructure.
+
+---
+
+## Breaking Down The Command
+
+Command:
+
+```bash
+docker exec -it qurio-ollama ollama pull qwen2.5:3b
+```
+
+`docker`
+
+Communicates with Docker.
+
+`exec`
+
+Runs a command inside a running container.
+
+`-it`
+
+Interactive terminal mode.
+
+`qurio-ollama`
+
+The target container.
+
+`ollama`
+
+The application being executed.
+
+`pull`
+
+The action being performed.
+
+`qwen2.5:3b`
+
+The specific model being downloaded.
+
+---
+
+## What Happens Internally
+
+The process looks roughly like this:
+
+```text
+Terminal
+↓
+Docker
+↓
+qurio-ollama Container
+↓
+Ollama Runtime
+↓
+Ollama Registry
+↓
+Download Model
+↓
+Store In Docker Volume
+```
+
+The downloaded model is stored in the Ollama volume, which means it survives container restarts and upgrades.
+
+---
+
+## Self-Hosting Changes The Learning Experience
 
 Using cloud services is convenient.
 
@@ -180,40 +295,34 @@ This creates a deeper understanding of how systems actually work.
 
 ---
 
-## Unexpected Issue
+## First Real Infrastructure Problem
 
-When opening n8n I encountered a secure cookie warning.
+While accessing n8n I encountered a secure cookie warning.
 
 The issue was caused by n8n expecting HTTPS while I was accessing it through HTTP.
 
-This introduced a new concept:
+This introduced another important concept:
 
-Secure cookies can only be used over encrypted HTTPS connections.
+Cookies can be marked as secure, meaning browsers only allow them over encrypted HTTPS connections.
 
-For local learning environments, this can be disabled temporarily.
+For a local learning environment, secure cookies can be disabled.
 
-For production systems, HTTPS should always be used.
-
----
-
-## Next Step
-
-Download a local language model into Ollama and verify that prompts can be processed entirely on my own hardware.
-
-Once working, connect Ollama to n8n and build the first automation workflow.
+For production environments, HTTPS should always be used.
 
 ---
 
 ## Key Takeaway
 
-The most valuable lesson was realizing that modern AI systems are often assembled from simple building blocks:
+The most valuable lesson from this experiment is that AI systems are built from layers.
 
 ```text
 Infrastructure
--> Containers
--> Services
--> Models
--> Workflows
+→ Containers
+→ Services
+→ Models
+→ Workflows
 ```
 
-Understanding the layers beneath the tools is just as important as using the tools themselves.
+Understanding each layer makes it easier to troubleshoot problems, build automations, and eventually create more advanced systems.
+
+Today was less about installing software and more about understanding how the pieces fit together.
