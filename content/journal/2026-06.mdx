@@ -20,7 +20,83 @@ I am focusing less on collecting options and more on finishing small experiments
 
 ## June 10
 
-"Today I stopped reading about self-hosted AI and actually built my first local AI environment. The biggest lesson wasn't how to install Ollama - it was understanding the layers underneath modern AI systems and seeing a model run entirely on my own hardware."
+### First Local AI Workflow
+
+#### Today's Goal
+
+Continue building the Qurio Local AI Lab and gain a practical understanding of how local AI models can be integrated into automation workflows.
+
+#### What I Built
+
+I successfully created my first `n8n -> Ollama` workflow running entirely on my home server.
+
+Current stack:
+
+* Ubuntu Server 24.04
+* Docker
+* Ollama
+* `qwen2.5:3b`
+* n8n
+* Portainer
+
+The workflow takes content from n8n, sends it to Ollama through the API, and receives an AI-generated response.
+
+#### What I Learned
+
+**Docker**
+
+Docker allows applications to run in isolated containers, making deployment and management simpler and more consistent.
+
+**Ollama**
+
+Ollama provides a simple way to run large language models locally and expose them through an API.
+
+**n8n**
+
+n8n acts as the orchestration layer, allowing data to flow between systems and enabling AI-powered automations.
+
+**APIs**
+
+Most integrations are structured requests and responses. Understanding request bodies, data types, and payload formats is critical.
+
+#### Challenges Encountered
+
+1. Incorrect body format (`Form-Data` vs JSON)
+2. Invalid JSON caused by multiline content
+3. Boolean vs string data type issues (`false` vs `"false"`)
+4. Understanding how n8n expressions are evaluated and passed to APIs
+
+#### Key Takeaways
+
+* Local AI is more accessible than I originally thought.
+* Small models such as `qwen2.5:3b` are sufficient for learning and summarization tasks.
+* Most automation work involves understanding data flow more than AI itself.
+* Debugging integrations teaches more than following tutorials.
+
+#### Why This Matters
+
+This was the first time I connected multiple technologies into a working AI workflow instead of using them independently.
+
+I now understand the complete path from:
+
+`Idea -> Workflow -> API -> Model -> Response`
+
+This is an important milestone for the Qurio project because it moves me from consuming AI tools to building with them.
+
+#### Next Step
+
+Experiment 003: Auto Note Generator
+
+Goal:
+
+* Input content
+* Send to Ollama
+* Generate structured notes
+* Save output automatically
+
+This continues the Qurio learning cycle:
+
+`Learn -> Build -> Document -> Improve`
 
 ## What I want next month
 
