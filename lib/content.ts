@@ -4,6 +4,7 @@ import matter from 'gray-matter';
 import { compileMDX } from 'next-mdx-remote/rsc';
 import type { Metadata } from 'next';
 import React from 'react';
+import remarkGfm from 'remark-gfm';
 
 export const collections = ['experiments', 'builds', 'notes'] as const;
 
@@ -119,6 +120,9 @@ export async function getContentBySlug(collection: CollectionName, slug: string)
     components: mdxComponents,
     options: {
       parseFrontmatter: true,
+      mdxOptions: {
+        remarkPlugins: [remarkGfm],
+      },
     },
   });
 
@@ -139,6 +143,11 @@ export async function getNowContent() {
   const { content } = await compileMDX({
     source,
     components: mdxComponents,
+    options: {
+      mdxOptions: {
+        remarkPlugins: [remarkGfm],
+      },
+    },
   });
 
   return content;
