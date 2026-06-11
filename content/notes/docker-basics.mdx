@@ -1,0 +1,144 @@
+---
+title: "Docker Basics"
+description: "A practical note on the Docker concepts that made the Qurio local AI lab easier to run, debug, and keep consistent."
+date: 2026-06-11
+status: active
+tags:
+  - docker
+  - containers
+  - infrastructure
+  - self-hosting
+  - notes
+---
+
+## Purpose
+
+Document the Docker ideas that became important while building Qurio and the local AI lab.
+
+## Key Idea
+
+Docker helped me turn a fragile setup into something I could start again, inspect clearly, and change without losing the bigger picture.
+
+## Explanation
+
+### What Docker Is
+
+Docker is a way to package applications with the dependencies they need so they can run in a more predictable environment.
+
+For this project, that mattered because I did not want `n8n` and Ollama to depend on a long list of manual server setup steps. I wanted a repeatable definition of the environment.
+
+### Why I Used It For Qurio And The Local AI Lab
+
+For Qurio itself, Docker clarified the way I think about services and deployment, even when the site is mostly content and application code.
+
+For the local AI lab, Docker was directly useful because it let me:
+
+- run Ollama and `n8n` as separate services
+- keep service configuration in one place
+- recreate containers without rebuilding everything from memory
+- isolate problems to a smaller layer when something broke
+
+The main benefit was not abstraction for its own sake. The benefit was consistency.
+
+### Image vs Container
+
+An image is the packaged template.
+
+A container is the running instance created from that template.
+
+That distinction matters because it explains why deleting and recreating a container is normal. The container is temporary. The image is the recipe it starts from.
+
+In the local AI lab, `ollama/ollama` is an image. `qurio-ollama` is a container created from it.
+
+### Volume
+
+A volume is persistent storage managed outside the container's temporary filesystem.
+
+This mattered immediately because Ollama models are large, and `n8n` stores workflows and settings that I do not want to lose every time a container is replaced.
+
+Without volumes, restarting is easy.
+
+With volumes, restarting is easy without starting over.
+
+### Port
+
+A port is the access point a service listens on.
+
+In practice, this is how one system knows where to reach another:
+
+- `5678` for `n8n`
+- `11434` for Ollama
+
+Ports are simple, but they become a common source of confusion when:
+
+- the service is running but not exposed
+- the wrong host port is mapped
+- the request is going to the right machine but the wrong service
+
+### Docker Compose
+
+Docker Compose is the part that made the setup manageable.
+
+Instead of starting services one command at a time, I can define them together, including names, ports, environment variables, and volumes. That makes the stack easier to read and easier to rerun.
+
+For the local AI lab, Compose is the bridge between "I installed some tools" and "I have a defined system."
+
+## Practical Use
+
+The most practical use of this note is troubleshooting the right layer.
+
+If something fails, I can ask:
+
+- Is the container running?
+- Is the right port exposed?
+- Is the service reachable on the Docker network?
+- Is the data stored in a volume?
+- Is the problem in the application, or in the container around it?
+
+This note also connects directly to the build work in [Local AI Lab](/builds/local-ai-lab), where these concepts stopped being abstract and started affecting real setup decisions.
+
+## Commands Used
+
+These are the commands I kept coming back to while working on the lab:
+
+```bash
+docker compose up -d
+docker compose ps
+docker compose logs
+docker exec -it qurio-ollama ollama pull qwen2.5:3b
+docker ps
+docker volume ls
+```
+
+Each one answers a different practical question:
+
+- Is the stack up?
+- Which containers are actually running?
+- What is the service saying?
+- Is the model installed?
+- What data is persistent?
+
+## Related Experiments
+
+- [Local AI Lab 001: First n8n to Ollama Test](/experiments/local-ai-lab-001-first-n8n-ollama-test)
+- [Local AI Lab 002: First n8n to Ollama Workflow](/experiments/local-ai-lab-002-first-n8n-ollama-workflow)
+
+## Lessons Learned
+
+- Docker was most useful when I treated it as a way to reduce setup drift, not as a goal by itself.
+- Image, container, volume, and port are basic terms, but mixing them up creates real confusion quickly.
+- Compose became the easiest way to describe the system honestly.
+- Persistent storage matters earlier than I expected.
+- A small self-hosted stack is enough to teach a lot about infrastructure.
+
+## Official Documentation
+
+- [Docker overview](https://docs.docker.com/get-started/docker-overview/)
+- [Docker volumes](https://docs.docker.com/engine/storage/volumes/)
+- [Docker Compose](https://docs.docker.com/compose/)
+
+## Takeaways
+
+- Docker made the local AI lab repeatable enough to keep learning from.
+- The most important concepts were not advanced ones. They were images, containers, volumes, ports, and Compose.
+- Once those basics were clearer, debugging became calmer and more methodical.

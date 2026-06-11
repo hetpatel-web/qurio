@@ -1,0 +1,110 @@
+---
+title: "Local AI Lab"
+description: "An ongoing build log for a small self-hosted AI environment used to learn Docker, Ollama, n8n, and practical workflow design."
+date: 2026-06-11
+status: active
+tags:
+  - ai
+  - self-hosting
+  - docker
+  - ollama
+  - n8n
+  - infrastructure
+---
+
+## Purpose
+
+Build a small local AI environment that is useful enough to test real workflows and simple enough to understand without guessing what each layer is doing.
+
+## Problem
+
+Most AI tooling becomes easier to use and harder to understand at the same time.
+
+That is fine for shipping quickly, but not ideal for learning. I wanted an environment where I could see the moving parts clearly:
+
+- the server
+- the containers
+- the services
+- the model
+- the workflow
+
+The problem was not just getting a model to respond. The real problem was building a setup I could inspect, change, and document honestly.
+
+## Approach
+
+The lab started small on purpose.
+
+I used a home server, Docker Compose, Ollama, and `n8n` as the first working stack. That gave me one runtime for local models and one orchestration layer for automations.
+
+Instead of chasing a larger architecture immediately, I aimed for a narrow loop:
+
+1. get the services running
+2. confirm they can communicate
+3. pass real content through the workflow
+4. document what broke and what became clearer
+
+## Architecture
+
+```text
+Ubuntu Home Server
+    ↓
+Docker Compose
+    ↓
++-------------------+     +-------------------+
+| qurio-ollama     | <--> | qurio-n8n        |
+| Ollama runtime   |      | workflow engine  |
++-------------------+     +-------------------+
+    ↓
+qwen2.5:3b
+```
+
+Supporting pieces around the main path:
+
+- named volumes for model data and workflow data
+- Docker networking between services
+- Portainer for visibility and basic management
+
+## Decisions
+
+- I used Docker Compose because it keeps the stack reproducible and easier to reason about.
+- I chose `qwen2.5:3b` because the server has limited RAM and the goal is learning, not pushing the largest model possible.
+- I kept the first workflows narrow so problems would be easier to isolate.
+- I treated the lab as infrastructure plus experiments, not as a one-off install.
+
+The related note [Docker Basics](/notes/docker-basics) captures the concepts that mattered most while making those decisions.
+
+## Progress
+
+What is working now:
+
+- Ollama is running locally in Docker.
+- `n8n` is running locally in Docker.
+- `n8n` can call Ollama over the internal Docker network.
+- The workflow can pass content and receive structured output.
+
+What is still early:
+
+- prompt design is basic
+- outputs are not yet saved automatically into Qurio content
+- monitoring and maintenance are still light
+
+## Related Experiments
+
+- [Local AI Lab 001: First n8n to Ollama Test](/experiments/local-ai-lab-001-first-n8n-ollama-test)
+- [Local AI Lab 002: First n8n to Ollama Workflow](/experiments/local-ai-lab-002-first-n8n-ollama-workflow)
+
+These experiments matter because they prove the build incrementally instead of assuming the stack works just because the containers are running.
+
+## Lessons Learned
+
+- Small infrastructure projects become easier to grow when the first version is narrow.
+- Docker removed a lot of setup ambiguity, but it also forced clearer thinking about volumes, ports, and service boundaries.
+- A local AI lab is more understandable when it is documented as a build, not just a list of commands.
+- The useful question is usually not "does AI work?" but "which layer is failing right now?"
+
+## Next Steps
+
+- Save generated outputs into a more reusable Markdown flow.
+- Improve prompt structure and output formatting.
+- Add a few repeatable workflows that solve small real tasks.
+- Document service updates, restores, and maintenance more clearly.
