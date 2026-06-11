@@ -1,0 +1,138 @@
+---
+
+title: "Local AI Lab 001: First n8n to Ollama Test"
+date: "2026-06-10"
+summary: "Testing whether n8n can communicate with a locally hosted Ollama model running in Docker."
+tags:
+
+* ai
+* ollama
+* n8n
+* docker
+* homelab
+  status: published
+
+---
+
+# Local AI Lab 001: First n8n to Ollama Test
+
+## Objective
+
+Verify that n8n can send a prompt to Ollama and receive a response from a locally hosted AI model.
+
+## Hypothesis
+
+If n8n and Ollama can communicate over Docker's internal network, then n8n should be able to send prompts to a local AI model and receive generated responses.
+
+## Environment
+
+### Infrastructure
+
+* Ubuntu Server
+* Docker
+* Ollama
+* n8n
+* Portainer
+
+### Installed Model
+
+```text
+qwen2.5:3b
+Size: 1.9 GB
+```
+
+### Running Containers
+
+| Container    | Purpose             |
+| ------------ | ------------------- |
+| qurio-ollama | Local AI runtime    |
+| qurio-n8n    | Workflow automation |
+| portainer    | Docker management   |
+
+## Workflow
+
+```text
+Manual Trigger
+    ↓
+HTTP Request
+    ↓
+Ollama
+    ↓
+qwen2.5:3b
+    ↓
+Response
+```
+
+### Endpoint
+
+```text
+http://qurio-ollama:11434/api/generate
+```
+
+### Request
+
+```json
+{
+  "model": "qwen2.5:3b",
+  "prompt": "Summarize Docker in one sentence.",
+  "stream": false
+}
+```
+
+## Result
+
+The workflow executed successfully and returned a response from the model.
+
+### Response
+
+```json
+{
+  "model": "qwen2.5:3b",
+  "response": "Docker is a platform that allows users to create and run applications with all their dependencies contained in isolated containers.",
+  "done": true
+}
+```
+
+## Observations
+
+* n8n successfully communicated with Ollama.
+* Docker internal networking resolved the container name `qurio-ollama`.
+* No external API or cloud AI service was required.
+* The response quality was suitable for simple summarization tasks.
+* Local AI can be integrated into automation workflows using standard HTTP requests.
+
+## What I Learned
+
+Ollama exposes a REST API that can be consumed by other applications.
+
+n8n can act as the orchestration layer, allowing AI to become one step within a larger automated workflow.
+
+Docker networking allows containers within the same stack to communicate using container names instead of IP addresses.
+
+## Why This Matters
+
+This experiment establishes the foundation for future local AI workflows.
+
+Potential use cases include:
+
+* Article summarization
+* Meeting note summaries
+* Documentation generation
+* Content categorization
+* Knowledge management workflows
+
+## Conclusion
+
+The experiment was successful.
+
+n8n was able to communicate with a locally hosted AI model running through Ollama and receive a generated response. This confirms that the core architecture required for future Qurio AI experiments is working.
+
+## Next Experiment
+
+Build a workflow that accepts a larger block of text and returns:
+
+* Summary
+* Key takeaways
+* Action items
+* Follow-up questions
+
