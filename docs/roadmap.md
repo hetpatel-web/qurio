@@ -1,21 +1,26 @@
 # Roadmap
 
-## Current focus
+## Phase 1: Foundation
 
-- Launch the first version of the Qurio website
-- Establish a repeatable writing format for experiments, builds, and notes
-- Publish enough starter content to make the structure real
+- Standardize content frontmatter and structure.
+- Add reusable templates for repeatable writing.
+- Tighten content loading so invalid entries fail clearly.
+- Clean up core documentation and workflow notes.
 
-## Next 90 days
+## Phase 2: Content Quality
 
-- Add more entries across each content type
-- Refine the homepage based on what feels most useful
-- Improve cross-linking between related experiments, builds, and notes
-- Start a consistent monthly journal habit
+- Improve clarity, consistency, and usefulness of existing entries.
+- Strengthen links between related experiments, notes, and builds.
+- Build a steadier publishing rhythm for journal and Now updates.
 
-## Future ideas
+## Phase 3: Site Experience
 
-- Add lightweight search
-- Add related entry suggestions
-- Add reading lists and reference notes
-- Explore a public changelog for site evolution
+- Refine page experience without losing the reading-first feel.
+- Improve navigation between collections and individual entries.
+- Add only the smallest supporting UX improvements that help readers find context.
+
+## Phase 4: Publishing System
+
+- Make publishing more repeatable and less manual.
+- Add simple quality checks around content readiness.
+- Prepare the site structure for future publishing features without adding them too early.

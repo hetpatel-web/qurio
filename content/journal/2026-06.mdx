@@ -2,102 +2,46 @@
 title: June 2026 Journal
 description: A short monthly record of experiments, friction, and what is changing in my process.
 date: 2026-06-01
-status: Ongoing
+status: active
 tags:
   - journal
   - reflection
 ---
 
-## What shifted this month
+## What I Worked On
 
-I am focusing less on collecting options and more on finishing small experiments. That has made progress feel quieter but more real.
+I focused on turning the Local AI Lab from a vague idea into working experiments. That included getting `n8n -> Ollama` communication running on the home server and clarifying the structure of Qurio itself.
 
-## What I noticed
+I also started cleaning up the content system so notes, experiments, the journal, and the Now page each have a clearer role.
+
+## What I Learned
 
 - Clear constraints create better notes.
 - I remember more when I document right after building.
 - A small project with sharp scope teaches more than a broad plan with no output.
+- Most workflow problems show up in request formatting and data handling before they show up in model behavior.
 
-## June 10
+## What Changed
 
-### First Local AI Workflow
+I am focusing less on collecting options and more on finishing small experiments. That has made progress feel quieter but more real.
 
-#### Today's Goal
+The project context is now more explicit, and the content system feels easier to reason about. Notes, experiments, builds, the journal, and the Now page each have a clearer purpose instead of feeling like loosely related sections.
 
-Continue building the Qurio Local AI Lab and gain a practical understanding of how local AI models can be integrated into automation workflows.
+## Wins
 
-#### What I Built
+- First working `n8n -> Ollama` workflow on the home server.
+- Clearer understanding of Docker, Ollama, and API request structure.
+- Better definition of how Qurio should organize experiments, notes, builds, and monthly reflection.
 
-I successfully created my first `n8n -> Ollama` workflow running entirely on my home server.
+## Challenges
 
-Current stack:
+- Invalid JSON caused by multiline content.
+- Incorrect body format when using Form-Data instead of JSON.
+- Boolean versus string mismatches such as `false` versus `"false"`.
+- Keeping documentation structure consistent while the project is still taking shape.
 
-* Ubuntu Server 24.04
-* Docker
-* Ollama
-* `qwen2.5:3b`
-* n8n
-* Portainer
+## Next Focus
 
-The workflow takes content from n8n, sends it to Ollama through the API, and receives an AI-generated response.
+Standardize the existing `.mdx` files so the content system stays consistent before more features are added.
 
-#### What I Learned
-
-**Docker**
-
-Docker allows applications to run in isolated containers, making deployment and management simpler and more consistent.
-
-**Ollama**
-
-Ollama provides a simple way to run large language models locally and expose them through an API.
-
-**n8n**
-
-n8n acts as the orchestration layer, allowing data to flow between systems and enabling AI-powered automations.
-
-**APIs**
-
-Most integrations are structured requests and responses. Understanding request bodies, data types, and payload formats is critical.
-
-#### Challenges Encountered
-
-1. Incorrect body format (`Form-Data` vs JSON)
-2. Invalid JSON caused by multiline content
-3. Boolean vs string data type issues (`false` vs `"false"`)
-4. Understanding how n8n expressions are evaluated and passed to APIs
-
-#### Key Takeaways
-
-* Local AI is more accessible than I originally thought.
-* Small models such as `qwen2.5:3b` are sufficient for learning and summarization tasks.
-* Most automation work involves understanding data flow more than AI itself.
-* Debugging integrations teaches more than following tutorials.
-
-#### Why This Matters
-
-This was the first time I connected multiple technologies into a working AI workflow instead of using them independently.
-
-I now understand the complete path from:
-
-`Idea -> Workflow -> API -> Model -> Response`
-
-This is an important milestone for the Qurio project because it moves me from consuming AI tools to building with them.
-
-#### Next Step
-
-Experiment 003: Auto Note Generator
-
-Goal:
-
-* Input content
-* Send to Ollama
-* Generate structured notes
-* Save output automatically
-
-This continues the Qurio learning cycle:
-
-`Learn -> Build -> Document -> Improve`
-
-## What I want next month
-
-More consistent documentation, fewer parallel ideas, and more finished pages in this garden.
+Experiment 003 is still the next build target: accept content, send it to Ollama, generate structured notes, and save the output automatically.

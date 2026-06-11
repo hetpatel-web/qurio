@@ -1,25 +1,28 @@
 # Principles
 
-## Learn by doing
+Qurio follows a simple working loop:
 
-Understanding gets sharper when it is tested in practice.
+`Learn -> Build -> Document -> Improve`
 
-## Share the process
+## Learn
 
-Notes should include rough edges, false starts, and revisions where useful.
+Start with curiosity, not certainty. Learn enough to begin, then move quickly toward something testable.
 
-## Build before optimizing
+## Build
 
-The first priority is getting something real in front of me.
+Use real projects, experiments, and systems as the main source of understanding. Practical constraints reveal more than abstract opinions.
 
-## Prefer experiments over opinions
+## Document
 
-When possible, test ideas instead of arguing about them in the abstract.
+Write down what was attempted, what worked, what failed, and what changed in understanding. Honest documentation is more useful than polished summaries that hide the friction.
 
-## Avoid hype
+## Improve
 
-Write plainly. Stay skeptical of inflated claims and vague certainty.
+Use what was documented to make the next experiment, build, or note better. Improvement comes from iteration, not from waiting for a perfect plan.
 
-## Document what works and what does not
+## Style
 
-Useful notes include both the result and the friction that produced it.
+- Prefer experiments over opinions.
+- Build before optimizing.
+- Avoid hype and write plainly.
+- Keep the site reading-first and grounded in practice.

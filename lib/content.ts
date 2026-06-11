@@ -7,22 +7,24 @@ import React from 'react';
 import remarkGfm from 'remark-gfm';
 
 export const collections = ['experiments', 'builds', 'notes'] as const;
+export const statuses = ['idea', 'active', 'complete', 'paused', 'archived'] as const;
 
 export type CollectionName = (typeof collections)[number];
+export type ContentStatus = (typeof statuses)[number];
 
 type RawFrontmatter = {
-  title: string;
-  description: string;
-  date: string | Date;
-  status: string;
-  tags: string[];
+  title?: unknown;
+  description?: unknown;
+  date?: unknown;
+  status?: unknown;
+  tags?: unknown;
 };
 
 export type Frontmatter = {
   title: string;
   description: string;
   date: string;
-  status: string;
+  status: ContentStatus;
   tags: string[];
 };
 
@@ -65,6 +67,71 @@ function normalizeDate(date: string | Date) {
   return date;
 }
 
+function failFrontmatter(entryPath: string, message: string): never {
+  throw new Error(`Invalid frontmatter in ${entryPath}: ${message}`);
+}
+
+function validateStringField(value: unknown, field: keyof RawFrontmatter, entryPath: string) {
+  if (typeof value !== 'string' || value.trim().length === 0) {
+    failFrontmatter(entryPath, `"${field}" must be a non-empty string.`);
+  }
+
+  return value.trim();
+}
+
+function validateDateField(value: unknown, entryPath: string) {
+  if (!(typeof value === 'string' || value instanceof Date)) {
+    failFrontmatter(entryPath, '"date" must be a string or Date.');
+  }
+
+  const normalizedDate = normalizeDate(value);
+  const timestamp = Date.parse(normalizedDate);
+
+  if (Number.isNaN(timestamp)) {
+    failFrontmatter(entryPath, '"date" must be a valid date.');
+  }
+
+  return new Date(timestamp).toISOString().slice(0, 10);
+}
+
+function validateStatusField(value: unknown, entryPath: string): ContentStatus {
+  if (typeof value !== 'string') {
+    failFrontmatter(entryPath, `"status" must be one of: ${statuses.join(', ')}.`);
+  }
+
+  if (!statuses.includes(value as ContentStatus)) {
+    failFrontmatter(entryPath, `"status" must be one of: ${statuses.join(', ')}.`);
+  }
+
+  return value as ContentStatus;
+}
+
+function validateTagsField(value: unknown, entryPath: string) {
+  if (!Array.isArray(value) || value.length === 0) {
+    failFrontmatter(entryPath, '"tags" must be a non-empty array of strings.');
+  }
+
+  const tags = value.map((tag) => {
+    if (typeof tag !== 'string' || tag.trim().length === 0) {
+      failFrontmatter(entryPath, '"tags" must contain only non-empty strings.');
+    }
+
+    return tag.trim();
+  });
+
+  return tags;
+}
+
+function parseFrontmatter(frontmatter: RawFrontmatter, entryPath: string): Frontmatter {
+  return {
+    title: validateStringField(frontmatter.title, 'title', entryPath),
+    description: validateStringField(frontmatter.description, 'description', entryPath),
+    date: validateDateField(frontmatter.date, entryPath),
+    status: validateStatusField(frontmatter.status, entryPath),
+    tags: validateTagsField(frontmatter.tags, entryPath),
+  };
+}
+
 async function readDirectory(collection: CollectionName) {
   const directory = resolveCollectionPath(collection);
   return fs.readdir(directory);
@@ -75,17 +142,17 @@ async function readFile(collectionPath: string, slug: string) {
   return fs.readFile(filePath, 'utf8');
 }
 
-function mapMeta(slug: string, frontmatter: RawFrontmatter): ContentMeta {
-  const normalizedDate = normalizeDate(frontmatter.date);
+function mapMeta(slug: string, frontmatter: RawFrontmatter, entryPath: string): ContentMeta {
+  const parsedFrontmatter = parseFrontmatter(frontmatter, entryPath);
 
   return {
-    title: frontmatter.title,
-    description: frontmatter.description,
-    status: frontmatter.status,
-    tags: frontmatter.tags,
-    date: normalizedDate,
+    title: parsedFrontmatter.title,
+    description: parsedFrontmatter.description,
+    status: parsedFrontmatter.status,
+    tags: parsedFrontmatter.tags,
+    date: parsedFrontmatter.date,
     slug,
-    dateLabel: formatDate(normalizedDate),
+    dateLabel: formatDate(parsedFrontmatter.date),
   };
 }
 
@@ -100,11 +167,11 @@ export async function getAllContent(collection: CollectionName) {
         const slug = filename.replace(/\.mdx$/, '');
         const source = await readFile(collectionPath, slug);
         const { data } = matter(source);
-        return mapMeta(slug, data as RawFrontmatter);
+        return mapMeta(slug, data as RawFrontmatter, `${collection}/${filename}`);
       }),
   );
 
-  return items.sort((left, right) => right.date.localeCompare(left.date));
+  return items.sort((left, right) => Date.parse(right.date) - Date.parse(left.date));
 }
 
 export async function getLatestContent(collection: CollectionName) {
@@ -126,8 +193,16 @@ export async function getContentBySlug(collection: CollectionName, slug: string)
     },
   });
 
+  const parsedFrontmatter = parseFrontmatter(frontmatter, `${collection}/${slug}.mdx`);
+
   return {
-    ...mapMeta(slug, frontmatter),
+    title: parsedFrontmatter.title,
+    description: parsedFrontmatter.description,
+    status: parsedFrontmatter.status,
+    tags: parsedFrontmatter.tags,
+    date: parsedFrontmatter.date,
+    slug,
+    dateLabel: formatDate(parsedFrontmatter.date),
     content,
   } satisfies ContentEntry;
 }
@@ -140,15 +215,18 @@ export async function getStaticSlugs(collection: CollectionName) {
 export async function getNowContent() {
   const filePath = path.join(rootContentDirectory, 'now', 'current.mdx');
   const source = await fs.readFile(filePath, 'utf8');
-  const { content } = await compileMDX({
+  const { content, frontmatter } = await compileMDX<RawFrontmatter>({
     source,
     components: mdxComponents,
     options: {
+      parseFrontmatter: true,
       mdxOptions: {
         remarkPlugins: [remarkGfm],
       },
     },
   });
+
+  parseFrontmatter(frontmatter, 'now/current.mdx');
 
   return content;
 }

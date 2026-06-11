@@ -1,108 +1,137 @@
 # Qurio
 
-Qurio is a personal digital garden for documenting experiments, builds, notes, and lessons learned through building.
+Qurio is a personal digital garden for documenting experiments, builds, notes, and reflections from real work.
 
 Core idea: curious people learn by building.
 
 ## Why Qurio Exists
 
-Qurio exists to help curious people become more capable of figuring things out for themselves by documenting real experiments, builds, notes, and lessons learned through action.
+Qurio exists to make learning more concrete. The project records what was tested, what was built, what was learned, and what should improve next.
 
 Read the full brand foundation in [docs/why-qurio-exists.md](docs/why-qurio-exists.md).
 
-## Project structure
+## Content Collections
+
+- `content/experiments/`: focused tests with a clear question, setup, result, and next experiment.
+- `content/builds/`: ongoing project work, infrastructure, or systems that evolve over time.
+- `content/notes/`: durable ideas, explanations, and working knowledge tied back to practice.
+- `content/journal/`: monthly reflection and progress logs.
+- `content/now/`: the current snapshot of focus, learning, and what is paused.
+- `content/templates/`: reusable MDX templates for new entries.
+
+## Required Frontmatter
+
+Every content entry should include:
+
+```mdx
+---
+title: "Entry title"
+description: "Short summary"
+date: 2026-06-11
+status: active
+tags:
+  - tag-one
+  - tag-two
+---
+```
+
+Allowed `status` values:
+
+- `idea`
+- `active`
+- `complete`
+- `paused`
+- `archived`
+
+## Project Structure
 
 ```text
 qurio/
 ├── app/
 ├── components/
 ├── content/
+│   ├── builds/
+│   ├── experiments/
+│   ├── journal/
+│   ├── notes/
+│   ├── now/
+│   └── templates/
 ├── docs/
+│   └── context/
 ├── lib/
 ├── public/
 └── styles/
 ```
 
-## Run locally
+## Common Commands
 
-1. Install dependencies:
+```bash
+npm install
+npm run dev
+npm run typecheck
+npm run build
+```
 
-   ```bash
-   npm install
-   ```
+## Local Development
 
-2. Start the development server:
-
-   ```bash
-   npm run dev
-   ```
-
+1. Install dependencies with `npm install`.
+2. Start the development server with `npm run dev`.
 3. Open `http://localhost:3000`.
 
-## Add a new note
+## Adding Content
 
-1. Create a new `.mdx` file in `content/notes/`.
-2. Add frontmatter:
+- For experiments, notes, and journal entries, start from the matching file in `content/templates/`.
+- Keep the writing calm, practical, honest, and reading-first.
+- Prefer documenting real constraints, results, and next steps over polished summaries.
 
-   ```md
-   ---
-   title: Your note title
-   description: Short summary
-   date: 2026-06-08
-   status: Draft
-   tags:
-     - tag-one
-     - tag-two
-   ---
-   ```
+Experiment structure:
 
-3. Write the note using Markdown or MDX.
-4. Visit `/notes` and `/notes/[slug]` in the app.
+- `Question`
+- `Hypothesis`
+- `Setup`
+- `Steps`
+- `Result`
+- `What Worked`
+- `What Failed`
+- `Lessons Learned`
+- `Next Experiment`
 
-## Add a new experiment
+Note structure:
 
-1. Create a new `.mdx` file in `content/experiments/`.
-2. Reuse the same frontmatter format.
-3. Add sections such as goal, setup, steps, results, and lessons learned.
+- `Purpose`
+- `Key Idea`
+- `Explanation`
+- `Practical Use`
+- `Related Experiments`
+- `Takeaways`
 
-## Add a new build
+Journal structure:
 
-1. Create a new `.mdx` file in `content/builds/`.
-2. Reuse the same frontmatter format.
-3. Add the project context, current state, learnings, and next problems to solve.
+- `What I Worked On`
+- `What I Learned`
+- `What Changed`
+- `Wins`
+- `Challenges`
+- `Next Focus`
 
-## Deploy to Vercel
+Now page structure:
 
-This project uses static export output.
+- `Current Focus`
+- `What I Am Learning`
+- `What I Am Building`
+- `What Is Paused`
+- `Next Step`
 
-1. Push the repository to GitHub.
-2. Import the project into Vercel.
-3. Vercel will detect Next.js automatically.
-4. Run the default build command:
+## Content Loading
 
-   ```bash
-   npm run build
-   ```
+- `lib/content.ts` loads the `experiments`, `builds`, and `notes` collections.
+- Entries are sorted by date descending.
+- Missing or malformed frontmatter fails with explicit build-time errors.
+- The site remains compatible with static export.
 
-Vercel will serve the generated static output without extra configuration.
+## Deployment
 
-## Deploy to Cloudflare Pages
+This project uses static export output, so `npm run build` should succeed before publishing.
 
-Because this project is statically exported, it can be deployed to Cloudflare Pages as a static site.
-
-1. Push the repository to GitHub.
-2. Create a new Cloudflare Pages project connected to the repository.
-3. Use these build settings:
-
-   ```text
-   Build command: npm run build
-   Build output directory: out
-   ```
-
-4. Deploy.
-
-## Notes
-
-- Content is stored locally in `content/`.
-- Dynamic entry routes are statically generated at build time.
-- The `docs/` directory stores the project intent, principles, and roadmap.
+- Vercel: build with `npm run build`.
+- Cloudflare Pages: build with `npm run build` and publish the `out/` directory.

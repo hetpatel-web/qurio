@@ -1,8 +1,8 @@
 ---
 title: "Local AI Lab 002: First n8n to Ollama Workflow"
-summary: "Sending real content from n8n to a locally hosted Ollama model and receiving a structured AI summary."
+description: "Sending real content from n8n to a locally hosted Ollama model and receiving a structured AI summary."
 date: 2026-06-10
-status: Published
+status: complete
 tags:
   - ai
   - ollama
@@ -12,9 +12,7 @@ tags:
   - workflow
 ---
 
-# Local AI Lab 002: First n8n to Ollama Workflow
-
-## Objective
+## Question
 
 Send content from n8n to a locally hosted Ollama model and receive an AI-generated summary.
 
@@ -22,7 +20,14 @@ Send content from n8n to a locally hosted Ollama model and receive an AI-generat
 
 If n8n sends properly formatted JSON to Ollama, then a local model should be able to return a structured response that can be reused inside an automation workflow.
 
-## Workflow
+## Setup
+
+- n8n running on the home server
+- Ollama serving `qwen2.5:3b`
+- HTTP Request node configured to call the Ollama API
+- Test content passed from n8n into the request body
+
+## Steps
 
 ```text
 Manual Trigger
@@ -40,44 +45,34 @@ Structured Response
 
 ## Result
 
-Success.
-
 n8n successfully passed content to Ollama running `qwen2.5:3b` on the home server.
 
 The model returned a structured response containing:
 
-* Summary
-* Key takeaways
-* Action items
-* Follow-up questions
+- Summary
+- Key takeaways
+- Action items
+- Follow-up questions
 
-## Challenges Encountered
+## What Worked
 
-* Invalid JSON caused by multiline content
-* Incorrect body format using Form-Data instead of JSON
-* Boolean type mismatch for the `stream` parameter
+- Separating instructions from the content body made the prompt easier to manage.
+- Sending JSON directly to Ollama produced reusable output for workflow steps.
+- The local model was sufficient for summarization and simple structure.
 
-## What I Learned
+## What Failed
 
-* APIs often require strict JSON formatting.
-* Data types matter. A string like `"false"` is not the same as a boolean `false`.
-* Building prompts from separate instruction and content fields creates more maintainable workflows.
-* Streaming responses can be useful for real-time output, but they are harder to process in automation workflows.
+- Invalid JSON caused by multiline content.
+- Incorrect body format when using Form-Data instead of JSON.
+- Boolean type mismatch for the `stream` parameter.
 
-## Why This Matters
+## Lessons Learned
 
-This experiment moves the setup beyond a simple connectivity test.
+- APIs often require strict JSON formatting.
+- Data types matter. A string like `"false"` is not the same as a boolean `false`.
+- Building prompts from separate instruction and content fields creates more maintainable workflows.
+- Streaming responses can be useful for real-time output, but they are harder to process in automation workflows.
 
-The workflow can now send meaningful content into a local model and receive output in a format that is useful for note-making, review, and future automation.
-
-## Conclusion
-
-The experiment was successful.
-
-The main challenge was not model quality or infrastructure, but request formatting. Once the payload structure and data types were correct, the workflow behaved as expected.
-
-This confirms that local AI summarization can be used as a practical step inside n8n workflows.
-
-## Next Step
+## Next Experiment
 
 Configure the workflow to return a single JSON response and automatically save the generated output into a Markdown note.

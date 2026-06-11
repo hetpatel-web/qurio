@@ -2,7 +2,7 @@
 title: "Qurio Note #001 - Building My First Local AI Lab"
 description: Building a local AI lab with Ollama and n8n, then learning how models, containers, volumes, and self-hosted infrastructure fit together.
 date: 2026-06-09
-status: Published
+status: complete
 tags:
   - ai
   - self-hosting
@@ -12,19 +12,15 @@ tags:
   - infrastructure
 ---
 
-## Why
+## Purpose
 
-I want to learn AI, automation, and self-hosted infrastructure without spending money on subscriptions or APIs.
+Explain what building the first local AI lab taught me about the layers underneath self-hosted AI workflows.
 
-Rather than jumping straight into building products, I decided to first understand the foundation that many modern AI systems are built on.
+## Key Idea
 
-The objective was simple:
+The useful lesson was not just that the lab worked, but that each layer had a distinct role: infrastructure, containers, services, models, and workflows.
 
-Create a local environment where AI models and automation tools can run on my own hardware.
-
----
-
-## What I Built
+## Explanation
 
 I deployed two services on my Ubuntu home server using Docker Compose:
 
@@ -43,10 +39,6 @@ Server
 
 This creates the foundation for running local AI models and building automation workflows.
 
----
-
-## What I Learned
-
 ### Containers Are Not Virtual Machines
 
 A more accurate understanding is that a container packages an application and its dependencies into an isolated environment.
@@ -54,8 +46,6 @@ A more accurate understanding is that a container packages an application and it
 Each container behaves like its own small system while sharing the host operating system kernel.
 
 This makes applications easier to deploy and reduces dependency conflicts.
-
----
 
 ### Images and Containers Are Different
 
@@ -73,8 +63,6 @@ Container:
 
 The image remains unchanged while containers can be started, stopped, and recreated.
 
----
-
 ### Docker Compose Is Infrastructure as Code
 
 Instead of manually starting containers one at a time, Docker Compose allows infrastructure to be described in a single file.
@@ -88,8 +76,6 @@ docker compose up -d
 creates the entire environment.
 
 This makes setups reproducible and easier to maintain.
-
----
 
 ### Ports Expose Services
 
@@ -106,8 +92,6 @@ Examples:
 Ports act like doors that allow traffic to reach a service.
 
 Without exposing the correct port, the service may be running but inaccessible.
-
----
 
 ### Volumes Protect Data
 
@@ -132,9 +116,7 @@ n8n volume stores:
 
 This allows containers to be recreated without losing data.
 
----
-
-## Understanding Ollama
+### Understanding Ollama
 
 One of the biggest lessons was realizing that Ollama is not the AI itself.
 
@@ -155,9 +137,7 @@ Docker runs containers.
 
 Ollama runs AI models.
 
----
-
-## Understanding AI Models
+### Understanding AI Models
 
 The actual intelligence comes from the model.
 
@@ -172,9 +152,7 @@ A model contains the learned patterns, relationships, and knowledge that allow i
 
 The model is what performs reasoning, summarization, writing, and question answering.
 
----
-
-## Why I Chose Qwen 2.5 3B
+### Why I Chose Qwen 2.5 3B
 
 The first model selected for this lab was:
 
@@ -196,9 +174,7 @@ Because my server currently has 8 GB of RAM, a 3B model offers a good balance be
 
 The goal of this lab is learning and experimentation rather than running the largest possible model.
 
----
-
-## What Does "Pulling a Model" Mean?
+### What "Pulling a Model" Means
 
 Pulling a model is similar to pulling a Docker image.
 
@@ -214,9 +190,7 @@ Once downloaded, the model can be used without needing to download it again.
 
 The model becomes part of the local infrastructure.
 
----
-
-## Breaking Down The Command
+### Breaking Down the Command
 
 Command:
 
@@ -252,9 +226,7 @@ The action being performed.
 
 The specific model being downloaded.
 
----
-
-## What Happens Internally
+### What Happens Internally
 
 The process looks roughly like this:
 
@@ -276,9 +248,7 @@ Store In Docker Volume
 
 The downloaded model is stored in the Ollama volume, which means it survives container restarts and upgrades.
 
----
-
-## Self-Hosting Changes The Learning Experience
+### Self-Hosting Changes the Learning Experience
 
 Using cloud services is convenient.
 
@@ -293,9 +263,7 @@ Running services locally forces me to understand:
 
 This creates a deeper understanding of how systems actually work.
 
----
-
-## First Real Infrastructure Problem
+### First Real Infrastructure Problem
 
 While accessing n8n I encountered a secure cookie warning.
 
@@ -309,9 +277,16 @@ For a local learning environment, secure cookies can be disabled.
 
 For production environments, HTTPS should always be used.
 
----
+## Practical Use
 
-## Key Takeaway
+This note gives me a clearer mental model for troubleshooting. When something breaks, I can ask which layer failed first: infrastructure, container, runtime, model, or workflow.
+
+## Related Experiments
+
+- [Local AI Lab 001: First n8n to Ollama Test](/experiments/local-ai-lab-001-first-n8n-ollama-test)
+- [Local AI Lab 002: First n8n to Ollama Workflow](/experiments/local-ai-lab-002-first-n8n-ollama-workflow)
+
+## Takeaways
 
 The most valuable lesson from this experiment is that AI systems are built from layers.
 
@@ -323,6 +298,6 @@ Infrastructure
 → Workflows
 ```
 
-Understanding each layer makes it easier to troubleshoot problems, build automations, and eventually create more advanced systems.
-
-Today was less about installing software and more about understanding how the pieces fit together.
+- Understanding each layer makes it easier to troubleshoot problems and design better experiments.
+- Self-hosting forces practical understanding of networking, storage, and deployment.
+- Today was less about installing software and more about understanding how the pieces fit together.
