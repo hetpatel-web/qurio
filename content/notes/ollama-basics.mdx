@@ -1,0 +1,222 @@
+---
+title: "Ollama Basics"
+description: "A practical note on what Ollama is, how it differs from the model it runs, and why it became the easiest entry point for local AI."
+date: 2026-06-11
+status: active
+tags:
+  - ollama
+  - local-ai
+  - ai
+  - docker
+  - homelab
+---
+
+## Purpose
+
+Document the core ideas that made Ollama easier to understand while building the local AI lab.
+
+## Key Idea
+
+Ollama is not the model itself. It is the local runtime that downloads, manages, and serves models on my own hardware.
+
+## Explanation
+
+### What Ollama Is
+
+Ollama is a tool for running large language models locally.
+
+Instead of sending prompts to a hosted provider, I can download supported models onto my own machine and interact with them through a local command line interface or API.
+
+In practice, Ollama handles:
+
+- model downloads
+- model management
+- model execution
+- local API access
+- hardware-aware runtime behavior
+
+That makes it one of the simplest ways to start learning local AI without assembling every layer by hand.
+
+### Why I Started Using It
+
+I wanted to understand AI systems beyond hosted interfaces.
+
+The main goals were:
+
+- understand local AI infrastructure
+- reduce dependence on cloud services
+- experiment at near-zero usage cost after setup
+- connect models to tools such as `n8n`
+- build a foundation for future local AI projects
+
+Ollama was the easiest way to move from reading about local models to actually using them.
+
+### Mental Model
+
+The clearest mental model is to treat Ollama as an AI runtime.
+
+The same way Docker runs containers, Ollama runs models.
+
+- computer = the machine
+- Ollama = the runtime layer
+- model = the actual intelligence being executed
+- API = the interface other tools use to talk to it
+
+Without a runtime layer, running local models involves more manual setup, configuration, and inference tooling. Ollama reduces that complexity into a simpler workflow.
+
+### How Ollama Works
+
+The usual flow is:
+
+1. Install Ollama.
+2. Download a model.
+3. Run the model.
+4. Send prompts.
+5. Receive responses.
+
+Internally, Ollama:
+
+- stores model files locally
+- loads a model into memory when needed
+- processes prompts
+- returns generated responses
+- exposes a local API that applications can call
+
+This is what makes it useful not only for direct experimentation, but also for automation and integration work.
+
+### Ollama vs The Model
+
+A common mistake is treating Ollama and the model as if they are the same thing.
+
+They are separate layers.
+
+Ollama is responsible for:
+
+- downloading models
+- managing model files
+- running inference
+- exposing the API
+
+The model is the part that contains the learned behavior.
+
+Examples include:
+
+- Qwen 2.5
+- Llama
+- Mistral
+- Gemma
+
+The model is the intelligence.
+
+Ollama is the runtime that makes that intelligence usable on a local machine.
+
+### Ollama vs ChatGPT
+
+The difference is mostly operational.
+
+ChatGPT is:
+
+- cloud-hosted
+- managed by OpenAI
+- ready to use without local setup
+- dependent on an internet connection
+- often tied to account or subscription limits
+
+Ollama is:
+
+- local-first
+- under my control
+- usable offline after the model is downloaded
+- free to run aside from hardware and electricity costs
+- dependent on the capability of the machine it runs on
+
+Both can provide AI responses, but the ownership, constraints, and workflow are very different.
+
+### My First Model
+
+For the local AI lab, I started with `qwen2.5:3b`.
+
+That choice made sense because it:
+
+- has a relatively small footprint
+- runs on modest hardware
+- responds quickly
+- is good enough for learning and workflow experiments
+
+The goal was not maximum capability. The goal was understanding the system clearly enough to build with it.
+
+## Practical Use
+
+The commands I used most often were:
+
+```bash
+ollama list
+ollama pull qwen2.5:3b
+ollama run qwen2.5:3b
+ollama rm qwen2.5:3b
+ollama ps
+```
+
+Together they answer the practical beginner questions:
+
+- Which models are installed?
+- How do I download one?
+- How do I run it?
+- How do I remove it?
+- What is active right now?
+
+### Local API
+
+Ollama exposes a local API, typically at:
+
+```text
+http://localhost:11434
+```
+
+That API makes it possible for tools such as:
+
+- `n8n`
+- Python scripts
+- web apps
+- custom automation tools
+
+to use a local model the same way they would call a hosted AI service.
+
+A minimal request looks like:
+
+```json
+{
+  "model": "qwen2.5:3b",
+  "prompt": "Explain Docker to a beginner.",
+  "stream": false
+}
+```
+
+This was the piece that made Ollama feel immediately useful in the lab, because it turned a local model into something other systems could actually integrate with.
+
+## Related Notes
+
+- [Docker Basics](/notes/docker-basics)
+- [Learning by Building](/notes/learning-by-building)
+- [Qurio Note #001 - Building My First Local AI Lab](/notes/qurio-note-001-building-my-first-local-ai-lab)
+- [Local AI Lab](/builds/local-ai-lab)
+
+## Lessons Learned
+
+- Running AI locally is easier than I expected once the runtime layer is clear.
+- Models and runtimes are different concepts and should be treated separately.
+- Small models are better for learning than jumping straight to large ones.
+- A local API matters as much as the model itself when the goal is integration.
+- Docker and Ollama work well together because one manages services and the other manages models.
+
+## Official Documentation
+
+- [Ollama documentation](https://ollama.com/library)
+- [Ollama GitHub repository](https://github.com/ollama/ollama)
+- [Qwen documentation](https://qwenlm.github.io/)
+
+## Takeaways
+
+- Ollama is the runtime, not the intelligence.
+- The easiest way to understand it is by using a small local model and the API together.
+- Once that distinction is clear, building local AI workflows becomes much easier to reason about.
