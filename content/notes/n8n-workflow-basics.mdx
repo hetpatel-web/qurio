@@ -1,0 +1,242 @@
+---
+title: "n8n Workflow Basics"
+description: "Understanding workflows, nodes, automation, and how n8n connects tools together."
+date: 2026-06-11
+status: active
+tags:
+  - n8n
+  - automation
+  - workflow
+  - local-ai
+  - docker
+---
+
+## Purpose
+
+Document the core workflow concepts that became important once I started connecting `n8n` to Ollama and treating automation as a practical system instead of a visual diagram.
+
+## Key Idea
+
+`n8n` is most useful when I treat it as a data orchestration tool. The main job is not "AI" or "automation" in the abstract. The main job is moving inputs through a sequence of clear steps and returning something useful on the other side.
+
+## Explanation
+
+### What `n8n` Is
+
+`n8n` is an automation platform that allows different tools and services to communicate through workflows.
+
+It can connect:
+
+* APIs
+* Databases
+* AI models
+* Web applications
+* Email systems
+* Spreadsheets
+* Custom scripts
+
+without requiring a full custom application for every integration.
+
+The name `n8n` stands for Node Automation.
+
+### Why I Started Using It
+
+I wanted a way to connect local AI models with other tools without writing an entire application first.
+
+The main goals were:
+
+* learn automation concepts
+* build AI workflows
+* experiment with local AI
+* reduce repetitive work
+* create reusable systems
+
+`n8n` provided a visual way to understand how data moves between services.
+
+### Mental Model
+
+The simplest mental model is an assembly line.
+
+* workflow = assembly line
+* node = machine
+* data = package
+* trigger = start button
+* output = finished product
+
+Each machine performs a specific task and passes the result to the next machine.
+
+### Workflow
+
+A workflow is a sequence of connected steps.
+
+Workflows define:
+
+* what happens
+* when it happens
+* what data moves between steps
+
+### Node
+
+A node performs a specific action.
+
+Examples:
+
+* HTTP Request
+* Edit Fields
+* Schedule Trigger
+* Code
+* AI Agent
+
+Every workflow is made up of nodes.
+
+### Trigger
+
+A trigger starts a workflow.
+
+Examples:
+
+* Manual Trigger
+* Schedule
+* Webhook
+* Form submission
+* Email received
+
+Without a trigger, a workflow does not start.
+
+### Data Flow
+
+Data moves from node to node.
+
+Each node:
+
+1. Receives data
+2. Processes data
+3. Sends data forward
+
+Understanding data flow is one of the most important skills in `n8n`, because most debugging comes down to figuring out what was passed in, how it changed, and what the next node expected.
+
+## Practical Use
+
+My first useful workflow was simple:
+
+Goal:
+
+Send text to a locally running Ollama model and receive a response.
+
+Workflow:
+
+```text
+Manual Trigger
+    ↓
+Edit Fields
+    ↓
+HTTP Request
+    ↓
+Response
+```
+
+This successfully connected `n8n` to a local AI model running through Ollama.
+
+### Connecting `n8n` To Ollama
+
+Ollama exposes an API locally.
+
+Example endpoint:
+
+```text
+http://ollama:11434/api/generate
+```
+
+In Docker Compose, containers can communicate using service names instead of `localhost`.
+
+This allowed the `n8n` container to communicate directly with the Ollama container.
+
+## Common Beginner Mistakes
+
+### Invalid JSON
+
+One missing quote or comma can break an API request.
+
+Always validate JSON before testing.
+
+### Incorrect Data Types
+
+Incorrect:
+
+```json
+{
+  "stream": "false"
+}
+```
+
+Correct:
+
+```json
+{
+  "stream": false
+}
+```
+
+Boolean values should not be wrapped in quotation marks.
+
+### Testing Too Much At Once
+
+When troubleshooting, test one node at a time.
+
+Verify:
+
+* input
+* output
+* data format
+
+before moving forward.
+
+### Skipping Logs
+
+Logs often explain exactly what failed.
+
+Read the error message carefully before changing multiple things at once.
+
+## Related Notes
+
+* [Docker Basics](/notes/docker-basics)
+* [Ollama Basics](/notes/ollama-basics)
+* [Qurio Note #001 - Building My First Local AI Lab](/notes/qurio-note-001-building-my-first-local-ai-lab)
+
+## Related Experiments
+
+* [Local AI Lab 001: First n8n to Ollama Test](/experiments/local-ai-lab-001-first-n8n-ollama-test)
+* [Local AI Lab 002: First n8n to Ollama Workflow](/experiments/local-ai-lab-002-first-n8n-ollama-workflow)
+
+## Lessons Learned
+
+* Automation is mostly moving data between systems.
+* APIs are the foundation of most workflows.
+* Small workflows are easier to debug.
+* Docker simplifies local deployments.
+* Local AI models can be treated like any other API service.
+* Understanding data flow is more important than memorizing nodes.
+
+## Official Documentation
+
+* [n8n documentation](https://docs.n8n.io/)
+* [n8n community forum](https://community.n8n.io/)
+* [Ollama documentation](https://ollama.com/)
+* [Docker documentation](https://docs.docker.com/)
+
+## Takeaways
+
+* `n8n` became easier once I stopped thinking about it as "magic automation" and started thinking about inputs, transformations, and outputs.
+* The most important beginner skill is tracing data flow between nodes.
+* Local AI fits naturally into `n8n` because Ollama behaves like any other HTTP service.
+
+## Next Experiment
+
+Create a workflow that accepts a note, sends it to Ollama for analysis, and automatically generates:
+
+* Summary
+* Key takeaways
+* Action items
+* Questions worth exploring
+
+This would create the foundation for an automated learning assistant.
