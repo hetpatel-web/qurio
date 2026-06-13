@@ -1,0 +1,147 @@
+---
+title: "Local AI Lab 003: Summarizing Qurio Notes with Ollama and n8n"
+description: "Testing whether a local language model can generate useful summaries, takeaways, action items, and follow-up questions from existing Qurio notes."
+date: 2026-06-12
+status: complete
+tags:
+  - local-ai
+  - ollama
+  - n8n
+  - automation
+  - knowledge-management
+  - experiments
+---
+
+## Question
+
+Can a local language model generate useful summaries and learning artifacts from existing Qurio notes?
+
+## Hypothesis
+
+A small local model such as `qwen2.5:3b` should be capable of generating useful summaries and extracting key ideas from technical notes, but output quality will depend heavily on prompt design.
+
+## Setup
+
+### Hardware
+
+- Dell OptiPlex 3050 Micro
+
+### Operating System
+
+- Ubuntu Server 24.04 LTS
+
+### Services
+
+- Docker
+- Ollama
+- n8n
+
+### Model
+
+```text
+qwen2.5:3b
+```
+
+## Steps
+
+```text
+Manual Trigger
+    ↓
+Edit Fields
+    ↓
+HTTP Request
+    ↓
+Ollama Generate API
+    ↓
+Structured Response
+```
+
+1. Created a new `n8n` workflow called `Qurio Content Summarizer`.
+2. Added a Manual Trigger node.
+3. Added an Edit Fields node containing `content` and `prompt`.
+4. Configured an HTTP Request node to send JSON requests to Ollama.
+5. Used the model `qwen2.5:3b`.
+6. Disabled streaming with `"stream": false`.
+7. Sent the note [Docker Basics](/notes/docker-basics) as the input content.
+8. Requested four outputs:
+   - summary
+   - key takeaways
+   - action items
+   - questions worth exploring
+
+### Request Shape
+
+```json
+{
+  "model": "qwen2.5:3b",
+  "prompt": "Summarize the note, extract key takeaways, propose action items, and suggest follow-up questions.",
+  "stream": false
+}
+```
+
+## Result
+
+The workflow successfully generated structured output from an existing Qurio note.
+
+The model was able to:
+
+- produce accurate summaries
+- extract the main concepts
+- generate useful follow-up questions
+- identify plausible next steps
+
+The strongest parts of the output were usually the summary and the follow-up questions.
+
+The weakest part was action items, which sometimes became generic instead of staying tied to the actual learning goals of Qurio.
+
+## What Worked
+
+- Local inference worked reliably.
+- Docker, Ollama, and `n8n` integrated successfully.
+- The workflow stayed simple enough to understand and iterate on.
+- The model accurately identified major concepts from the note.
+- Follow-up questions were often useful for deciding what to learn next.
+
+## What Failed
+
+- The initial prompt produced action items that were too generic.
+- The model lacked context about the purpose and voice of Qurio.
+- Output quality shifted noticeably with prompt wording.
+- Frontmatter and Markdown structure likely added some unnecessary noise to the input.
+
+## Lessons Learned
+
+- Small local models are capable of useful knowledge extraction tasks.
+- Prompt design matters more than the infrastructure at this stage.
+- The bottleneck is no longer connectivity or deployment.
+- The bottleneck is now workflow design and prompt quality.
+- Local AI can assist documentation workflows without depending on cloud services.
+
+## Next Experiment
+
+Experiment 004 should test whether Ollama can generate structured Qurio artifacts rather than summaries alone.
+
+A likely workflow is:
+
+```text
+Raw Learning Material
+    ↓
+Ollama
+    ↓
+Structured Markdown Draft
+    ↓
+Qurio Note Template
+```
+
+Questions worth exploring next:
+
+- Can a local model generate complete draft notes?
+- Can journal entries be partially automated?
+- Can experiment templates be generated automatically?
+- What is the quality difference between `qwen2.5:3b` and larger models?
+
+## Takeaway
+
+This experiment showed that a lightweight local AI stack can turn existing notes into structured knowledge outputs.
+
+The infrastructure is now proven. The next layer of work is improving prompts and generating more useful artifacts that support the Learn -> Build -> Document -> Improve workflow.
