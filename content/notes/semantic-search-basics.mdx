@@ -1,0 +1,248 @@
+---
+title: "Semantic Search Basics"
+description: "A beginner-friendly explanation of embeddings and how computers can search by meaning instead of exact words."
+date: 2026-06-14
+status: active
+tags:
+  - ai
+  - embeddings
+  - semantic-search
+  - learning-systems
+  - local-ai-lab
+---
+
+## Purpose
+
+Explain semantic search and embeddings in a way that is beginner-friendly, practical, and useful before the reader knows anything about Docker or infrastructure.
+
+## Key Idea
+
+Semantic search helps a computer search by meaning, not just exact words.
+
+## Explanation
+
+We usually think of search as matching words.
+
+If I type a phrase into a search box, I expect the system to find something containing the same words.
+
+That works sometimes, but it also creates a limit.
+
+### Everyday Example First
+
+Imagine I have a note called:
+
+```text
+Building a daily learning routine
+```
+
+Now I search:
+
+```text
+How do I stay consistent while learning?
+```
+
+A normal keyword search may not find the note unless it contains the exact words `consistent` or `learning`.
+
+Semantic search can understand that this question is close in meaning to:
+
+```text
+Building a daily learning routine
+```
+
+The words are different, but the idea is similar.
+
+### Simple Analogy
+
+Think of embeddings like a library organized by meaning instead of alphabetically.
+
+In a normal library, books may be arranged by title, author, or exact keywords.
+
+In a meaning-based library, related ideas are placed near each other.
+
+For example:
+
+```text
+Learning habits
+Daily routines
+Staying consistent
+Improving slowly
+Practice plans
+```
+
+These are not the same words, but they belong in the same area of meaning.
+
+So when I ask:
+
+```text
+How do I stay consistent while learning?
+```
+
+the system can think:
+
+```text
+This sounds like learning habits.
+This is probably related to daily routines.
+```
+
+Then it can bring back the right note.
+
+### What Embeddings Are
+
+An embedding is a way to turn text into numbers so a computer can compare meaning.
+
+For example, this sentence:
+
+```text
+Building a daily learning routine
+```
+
+can be turned into a list of numbers.
+
+I do not need to understand every number yet. The important idea is that similar meanings create similar number patterns.
+
+That means the computer can compare two pieces of text and ask:
+
+```text
+Are these ideas close in meaning?
+```
+
+instead of only asking:
+
+```text
+Do these words match exactly?
+```
+
+### Why Keyword Search Is Limited
+
+Normal search is useful, but it depends heavily on exact phrasing.
+
+That becomes a problem when:
+
+- the question uses different words than the original note
+- the writer and the reader describe the same idea differently
+- the useful answer is conceptually related but not an exact textual match
+
+Semantic search matters because humans often think in ideas first and wording second.
+
+### Core Idea
+
+Embeddings create a map of meaning.
+
+Similar ideas are placed close together:
+
+```text
+Learning habits
+Daily routines
+Consistency
+Practice
+Improvement
+```
+
+Unrelated ideas are placed far apart:
+
+```text
+Learning routine        ← far from →        Pasta recipe
+```
+
+This is why semantic search can find helpful information even when the user does not use the exact same words as the original note.
+
+### Technical Example
+
+The same idea also applies to technical notes.
+
+For example, someone may ask:
+
+```text
+How do I run my app the same way every time?
+```
+
+A semantic search system may connect that question to a note about:
+
+```text
+Docker containers and repeatable app environments
+```
+
+Even if the person does not know Docker yet, the important point is that semantic search can connect a question to a related idea by meaning.
+
+### Simple Workflow
+
+```text
+Text
+↓
+Embedding model
+↓
+Vector / numbers
+↓
+Compare meaning
+↓
+Return closest match
+```
+
+### Example
+
+Question:
+
+```text
+How do I stay consistent while learning?
+```
+
+Possible notes:
+
+```text
+A: Building a daily learning routine
+B: Fixing a server port issue
+C: Grocery list for the week
+D: Music playlist for an event
+```
+
+The closest note should be:
+
+```text
+A: Building a daily learning routine
+```
+
+Because the meaning is closest.
+
+### How This Connects To Qurio
+
+This matters because future AI tools need to find the right information before they can give a useful answer.
+
+For Qurio, semantic search could help with:
+
+- searching notes by meaning
+- finding related experiments
+- connecting build logs to lessons learned
+- creating a personal learning assistant
+- building a simple local RAG system
+
+RAG stands for Retrieval-Augmented Generation. At a basic level, it means the system first retrieves useful information, then uses an AI model to generate an answer based on that information.
+
+## Practical Use
+
+The practical takeaway is not that I need to build semantic search immediately.
+
+The practical takeaway is that meaning-based search can make a learning system more useful than simple keyword lookup when the content grows.
+
+If I want Qurio to become easier to search, connect, and reuse, semantic search is one of the ideas worth understanding early.
+
+## Related Experiments
+
+- [Qurio Site](/builds/qurio-site)
+- [The Gap Between Curiosity and Action](/notes/the-gap-between-curiosity-and-action)
+- [Local AI Lab](/builds/local-ai-lab)
+
+## Takeaways
+
+- Semantic search helps computers search by meaning, not just exact words.
+- Embeddings make this possible by turning text into numbers that represent meaning.
+- This is one of the foundations behind AI memory, document search, RAG, and personal knowledge systems.
+- Searching by meaning becomes more useful as a note system grows and wording becomes more varied.
+
+Questions to explore next:
+
+- How does text actually become numbers?
+- What is a vector?
+- How does similarity comparison work?
+- What is chunking?
+- How does this connect to RAG?
+- Can I use Ollama to create embeddings locally?
