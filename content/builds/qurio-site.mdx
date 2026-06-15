@@ -1,0 +1,108 @@
+---
+title: "Qurio Site"
+description: "An ongoing build log for the Qurio site itself, including the homepage, About page, philosophy notes, content system, and future structural decisions."
+date: 2026-06-14
+status: active
+tags:
+  - qurio
+  - website
+  - content-system
+  - documentation
+  - learning-system
+---
+
+## Purpose
+
+Create a central build entry for Qurio itself so the site, its philosophy, and its content system are documented as one evolving project instead of a scattered set of isolated changes.
+
+## Problem
+
+Qurio has grown through real work, but that also means the site can become fragmented if its direction lives only in scattered notes, page edits, and one-off decisions.
+
+The problem is not just writing more content. The problem is giving the site a stable structure so future changes to the homepage, About page, notes, builds, experiments, the journal, and the Now page all connect back to the same underlying system.
+
+If that structure is unclear, the site becomes harder to maintain, harder to extend, and harder to understand as a learning artifact.
+
+## Approach
+
+The approach is to treat Qurio itself as a build.
+
+That means documenting the site the same way I document other projects:
+
+- clarify the purpose
+- identify the real problem
+- make small, concrete improvements
+- leave behind durable artifacts
+- reflect on what changed
+- improve the next layer
+
+Instead of jumping straight into new features, the current focus is tightening the content system, the public-facing explanation, and the internal structure that guides future writing.
+
+## Architecture
+
+```text
+Qurio Foundation
+    ↓
+Homepage + About
+    ↓
+Content System
+    ├── Notes
+    ├── Experiments
+    ├── Builds
+    ├── Journal
+    └── Now
+    ↓
+Templates
+    ↓
+Future content and product decisions
+```
+
+The site structure matters because Qurio is not just a place to publish entries. It is the system that turns questions, experiments, builds, and reflection into durable knowledge.
+
+## Decisions
+
+- I am treating Qurio as a practical learning system, not just a personal technical blog.
+- I created a concise foundation first so the site direction is clearer before more copy or features are added.
+- I updated the homepage and About page before adding more surface area, because public context should match the deeper mission.
+- I standardized the content templates so future entries start from a clearer structure.
+- I am using builds, notes, experiments, the journal, and the Now page as distinct content types with distinct jobs.
+- I am avoiding broader feature work until the content system is stable enough to support it cleanly.
+
+## Progress
+
+What exists now:
+
+- a clearer Qurio foundation in `docs/`
+- a homepage aligned with the newer mission
+- an About page that explains the deeper philosophy
+- a first public philosophy note in [The Gap Between Curiosity and Action](/notes/the-gap-between-curiosity-and-action)
+- standardized content templates
+- live content that more consistently follows those templates
+
+What is working:
+
+- the site direction is clearer than before
+- the content types now have sharper roles
+- the public copy better matches the internal foundation
+- the templates reduce drift in future entries
+
+What is still early:
+
+- the site still needs more connected internal links between philosophy, builds, and experiments
+- not every future roadmap decision has a single obvious home yet
+- the product layer is still lighter than the content layer
+
+## Lessons Learned
+
+- Qurio becomes easier to maintain when each change leaves behind a visible artifact.
+- The site needed a stronger foundation before it needed more features.
+- A content system is part of the product, not just a support layer around it.
+- Notes, experiments, builds, the journal, and the Now page each become more useful when their roles are explicit.
+- Treating Qurio itself as a build keeps the project honest. It makes the process inspectable instead of relying on vague intentions.
+
+## Next Steps
+
+- Keep linking philosophy notes, builds, and experiments more deliberately so the learning system is easier to navigate.
+- Use this build entry as the anchor for future homepage, About page, and content-system decisions.
+- Clarify where roadmap-style decisions should live as Qurio grows beyond content cleanup.
+- Add more public notes that explain the ideas underneath the system, not just the tools used inside it.
