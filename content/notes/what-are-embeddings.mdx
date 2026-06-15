@@ -1,0 +1,249 @@
+---
+title: "What Are Embeddings?"
+description: "A beginner-friendly explanation of how embeddings turn text into numbers that computers can compare."
+date: 2026-06-14
+status: active
+tags:
+  - ai
+  - embeddings
+  - semantic-search
+  - learning-systems
+  - local-ai-lab
+---
+
+## Purpose
+
+Explain what embeddings are in a simple way, without going too deep into vectors, math, or implementation details.
+
+This note builds on the idea from semantic search:
+
+> Computers can search by meaning when text is converted into a form they can compare.
+
+## Key Idea
+
+An embedding is a way to turn text into numbers that represent meaning.
+
+The numbers are not important by themselves. What matters is that similar ideas create similar number patterns.
+
+## Explanation
+
+Computers do not naturally understand meaning the way humans do.
+
+A person can read this question:
+
+```text
+How do I stay consistent while learning?
+```
+
+and understand that it is related to:
+
+```text
+Building a daily learning routine
+```
+
+Even though the words are not exactly the same, the ideas are close.
+
+A computer needs help making that kind of comparison.
+
+That is where embeddings come in.
+
+An embedding model reads text and converts it into a list of numbers.
+
+Simple flow:
+
+```text
+Text
+↓
+Embedding model
+↓
+Numbers that represent meaning
+```
+
+For example:
+
+```text
+Building a daily learning routine
+```
+
+might become something like:
+
+```text
+[0.12, -0.45, 0.88, 0.03, ...]
+```
+
+I do not need to understand every number yet.
+
+The important idea is:
+
+```text
+Similar meaning → similar number pattern
+Different meaning → different number pattern
+```
+
+### Simple Analogy
+
+Think of embeddings like giving every idea a location on a map.
+
+Ideas that are similar are placed near each other.
+
+For example:
+
+```text
+Learning habits
+Daily routines
+Staying consistent
+Practice plans
+```
+
+These ideas would be close together.
+
+An unrelated idea like:
+
+```text
+Pasta recipe
+```
+
+would be far away.
+
+The embedding does not store the sentence as normal text. It stores a number-based representation that helps the computer understand where the idea belongs on the meaning map.
+
+### Why Computers Need Numbers
+
+Computers are good at comparing numbers.
+
+They are not naturally good at understanding human meaning.
+
+So instead of asking a computer to directly understand this:
+
+```text
+How do I stay consistent while learning?
+```
+
+we first convert it into numbers.
+
+Then we also convert stored notes into numbers.
+
+After that, the computer can compare the numbers and find which note is closest in meaning.
+
+### How Embeddings Help Search
+
+Semantic search uses embeddings in two places:
+
+1. Stored notes are converted into embeddings.
+2. The user's question is converted into an embedding.
+
+Then the system compares the question embedding to the stored note embeddings.
+
+Simple workflow:
+
+```text
+Stored notes → embeddings
+User question → embedding
+Compare embeddings
+Return closest match
+```
+
+This is how a system can find a useful note even when the question uses different words.
+
+### Example
+
+Stored note:
+
+```text
+Building a daily learning routine
+```
+
+User question:
+
+```text
+How do I stay consistent while learning?
+```
+
+These are different words, but the meaning is close.
+
+An embedding helps the computer recognize that closeness.
+
+Another stored note:
+
+```text
+Grocery list for the week
+```
+
+This is not close in meaning, so it should rank lower.
+
+### Connection To Semantic Search
+
+Semantic search is the search experience.
+
+Embeddings are one of the tools that make it possible.
+
+Simple relationship:
+
+```text
+Embeddings create the meaning numbers.
+Semantic search uses those numbers to find related content.
+```
+
+So when I say semantic search helps computers search by meaning, embeddings are the hidden step that makes the meaning searchable.
+
+### Connection To Qurio
+
+For Qurio, embeddings could eventually help connect:
+
+- notes
+- experiments
+- build logs
+- questions
+- lessons learned
+
+This would make the project easier to search as the content grows.
+
+Instead of only searching for exact words, Qurio could help find related ideas across the learning journey.
+
+For example, a future Qurio search could connect:
+
+```text
+How do I stay consistent with projects?
+```
+
+to notes about:
+
+```text
+daily learning routines
+building in public
+small experiments
+documentation habits
+```
+
+Even if those notes use different wording.
+
+## Practical Use
+
+The practical takeaway is not that I need to understand the math immediately.
+
+The practical takeaway is that embeddings are a bridge between human language and computer comparison.
+
+They let a computer treat meaning as something it can measure.
+
+## Related Content
+
+- [Semantic Search Basics](/notes/semantic-search-basics)
+- [Qurio Site](/builds/qurio-site)
+- [Local AI Lab](/builds/local-ai-lab)
+
+## Takeaways
+
+- An embedding turns text into numbers that represent meaning.
+- Similar ideas create similar number patterns.
+- Embeddings help computers compare ideas instead of only matching exact words.
+- Semantic search uses embeddings to find related content.
+- Embeddings are one of the foundations behind AI memory, document search, RAG, and personal knowledge systems.
+
+## Questions to Explore Next
+
+- What is a vector?
+- How does similarity comparison work?
+- What is cosine similarity?
+- What is chunking?
+- How are embeddings stored?
+- Can I create embeddings locally with Ollama?
