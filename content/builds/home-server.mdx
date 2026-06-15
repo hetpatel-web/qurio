@@ -1,6 +1,6 @@
 ---
 title: Home Server Infrastructure Journey
-description: Notes from setting up a personal home server with an eye toward reliability, learning, and sensible complexity.
+description: Notes from building a modest home server that stays understandable, maintainable, and useful enough to support the rest of Qurio.
 date: 2026-05-19
 status: active
 tags:
@@ -8,41 +8,131 @@ tags:
   - infrastructure
   - self-hosting
   - systems
+  - docker
 ---
 
-## Goal
+## Purpose
 
-Build a home server setup that is stable enough to be useful, flexible enough to grow, and simple enough that I can still understand it six months from now.
+Document the server setup that supports self-hosted tools, experiments, and the broader Qurio workflow without turning the infrastructure into its own full-time project.
 
-## Current setup
+## Problem
 
-Right now the stack is intentionally modest:
+I needed a stable place to run small services, test self-hosted tools, and learn infrastructure through actual use instead of only reading about it.
+
+The risk with home server projects is that they drift into unnecessary complexity quickly. It is easy to add more software than I can realistically maintain, more abstraction than I need, and more moving parts than I can debug calmly when something breaks.
+
+So the problem was not just "set up a server." The real problem was building something modest enough to manage, reliable enough to trust, and documented well enough that I could return to it later without rebuilding the whole mental model from scratch.
+
+## Approach
+
+The approach has been intentionally conservative.
+
+I started with one low-power machine and a small number of services. From the beginning, I treated maintenance, backups, and documentation as part of the build rather than cleanup tasks for later.
+
+The main operating rules have been:
+
+- keep the number of services small
+- prefer Docker for repeatability
+- document ports, volumes, and dependencies as they are introduced
+- add remote access only when it makes the setup easier to manage
+- avoid tools that solve theoretical future problems but add present maintenance cost
+
+This has made the server slower to expand, but much easier to understand.
+
+## Architecture
+
+```text
+Home Server
+    ↓
+Ubuntu Server
+    ↓
+Docker Engine
+    ↓
++------------------+    +------------------+    +------------------+
+| Portainer        |    | Application      |    | Backup + Docs    |
+| container admin  |    | containers       |    | operational      |
++------------------+    +------------------+    +------------------+
+    ↓
+Tailscale for secure remote access
+```
+
+The important point is that the supporting pieces are there to reduce operational friction:
+
+- Docker keeps services reproducible
+- Portainer provides visibility into containers and volumes
+- Tailscale provides simpler remote access than exposing services directly
+- backups reduce the cost of mistakes
+- documentation reduces the cost of forgetting
+
+## Key Decisions
+
+- I chose modest hardware on purpose. The goal is to learn infrastructure and run small useful services, not to simulate a datacenter.
+- I use Docker because it makes service definitions easier to repeat, inspect, and rebuild.
+- I use Tailscale because it gives me remote access without immediately forcing more network exposure and configuration complexity.
+- I use Portainer because seeing containers, volumes, and status in one place makes day-to-day operations calmer.
+- I treat backups and documentation as core infrastructure. A service is not really "set up" if I cannot explain how to restore it or where its data lives.
+- I have tried to avoid stacking tools that overlap heavily, because each extra layer becomes another maintenance obligation.
+
+## Current Setup
+
+Right now the server is intentionally small:
 
 - one low-power machine
-- Docker for services
-- a small set of self-hosted apps
+- Ubuntu Server as the base operating system
+- Docker for running services
+- Portainer for container management and visibility
+- Tailscale for remote access
 - local backups plus off-site copies for important files
-- documentation for ports, volumes, and service dependencies
+- written notes for ports, named volumes, service roles, and dependencies
 
-The main rule is that every layer I add should solve a real problem.
+This setup became the foundation for the [Local AI Lab](/builds/local-ai-lab) because it already solved the practical questions that local AI depends on:
 
-## Why this matters
+- Where do services run?
+- How are they restarted?
+- Where is persistent data stored?
+- How do containers reach each other?
+- How do I access the system remotely without making the network messier than necessary?
 
-Home server projects are a good test of practical systems thinking. They force me to care about uptime, backup strategy, network basics, and maintenance overhead, not just the fun part of getting a container to run once.
+Once those basics were in place, adding Ollama and `n8n` became a constrained extension of an existing system instead of a separate infrastructure problem.
 
-One direct extension of that work is the [Local AI Lab](/builds/local-ai-lab), which uses the home server as the base for running Ollama and `n8n` in a small, repeatable stack.
+## What Worked
 
-## What I learned
+- Starting with modest infrastructure kept the system understandable.
+- Docker made it easier to recreate services instead of nursing fragile one-off installs.
+- Tailscale reduced friction for remote access without forcing early complexity around exposed services.
+- Portainer made routine checks faster, especially when I needed a quick view of container state or volumes.
+- Backups changed the way I made decisions. I could experiment more calmly once I knew important data was not living in only one place.
+- Documentation paid off as soon as the second and third services were added.
 
-- Reliability starts with boring decisions, not clever ones.
-- Documentation matters more as soon as the second service is added.
-- Naming volumes and folders clearly saves time later.
-- Backups are part of the setup, not an optional future task.
-- Small infrastructure projects teach tradeoffs faster than reading architecture threads.
+## What Was Difficult
 
-## Problems to solve next
+- Reliability work is less visible than new-service work, so it is easy to postpone the boring but necessary parts.
+- Maintenance decisions are recurring, not one-time. Updates, restores, naming, and storage layout all need repeatable habits.
+- It takes discipline to keep a home server small once new ideas show up.
+- Some tools make the system easier to observe, but every tool also becomes one more thing to maintain.
+- The hardest part is often deciding what not to add.
 
-- Improve monitoring without adding noise.
-- Make restores as easy to test as backups are to schedule.
-- Reduce the number of manual steps for updating services.
-- Decide which services are worth keeping local and which are better left hosted elsewhere.
+## Lessons Learned
+
+- Reliability usually comes from boring choices made early.
+- Modest infrastructure is not a compromise here. It is part of the design. Smaller systems are easier to reason about and easier to maintain honestly.
+- Docker is most useful when it reduces setup drift, not when it encourages more containers than I need.
+- Backups and documentation are not support tasks around the server. They are part of the server.
+- A useful home server needs a maintenance model, not just a deployment model.
+- Avoiding unnecessary complexity preserves time for the actual work the server is supposed to support.
+
+## Related Notes and Experiments
+
+- [Local AI Lab](/builds/local-ai-lab)
+- [Docker Basics](/notes/docker-basics)
+- [Qurio Note #001 - Building My First Local AI Lab](/notes/qurio-note-001-building-my-first-local-ai-lab)
+- [Local AI Lab 001: First n8n to Ollama Test](/experiments/local-ai-lab-001-first-n8n-ollama-test)
+- [Local AI Lab 002: First n8n to Ollama Workflow](/experiments/local-ai-lab-002-first-n8n-ollama-workflow)
+- [Local AI Lab 003: Summarizing Qurio Notes with Ollama and n8n](/experiments/local-ai-lab-003-summarizing-qurio-notes-with-ollama-and-n8n)
+
+## Next Steps
+
+- Make restore testing more explicit instead of assuming backups are enough because they exist.
+- Keep tightening service documentation so each container, port, and volume has a clear reason for being there.
+- Reduce manual update steps where possible without adding orchestration complexity I do not need yet.
+- Keep the server focused on supporting real projects such as the Local AI Lab instead of collecting loosely justified services.
