@@ -101,6 +101,10 @@ img {
   padding: 1.5rem 0;
 }
 
+.home-detail {
+  padding-top: 0.5rem;
+}
+
 .section-title {
   margin: 0 0 1rem;
   font-size: 1.2rem;
@@ -224,6 +228,31 @@ img {
   gap: 2rem;
 }
 
+.split-equal {
+  align-items: start;
+}
+
+.loop-list {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0;
+  margin: 0 0 1rem;
+  list-style: none;
+}
+
+.loop-list li {
+  padding: 0.8rem 0.95rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.loop-note {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
 @media (min-width: 768px) {
   .page {
     padding: 4rem 0 5rem;
@@ -240,5 +269,9 @@ img {
   .split {
     grid-template-columns: minmax(0, 2fr) minmax(18rem, 1fr);
     align-items: start;
+  }
+
+  .split-equal {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
