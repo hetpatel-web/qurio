@@ -97,9 +97,7 @@ If something fails, I can ask:
 
 This note also connects directly to the build work in [Local AI Lab](/builds/local-ai-lab), where these concepts stopped being abstract and started affecting real setup decisions.
 
-## Commands Used
-
-These are the commands I kept coming back to while working on the lab:
+The commands I kept coming back to while working on the lab were:
 
 ```bash
 docker compose up -d
@@ -123,22 +121,10 @@ Each one answers a different practical question:
 - [Local AI Lab 001: First n8n to Ollama Test](/experiments/local-ai-lab-001-first-n8n-ollama-test)
 - [Local AI Lab 002: First n8n to Ollama Workflow](/experiments/local-ai-lab-002-first-n8n-ollama-workflow)
 
-## Lessons Learned
-
-- Docker was most useful when I treated it as a way to reduce setup drift, not as a goal by itself.
-- Image, container, volume, and port are basic terms, but mixing them up creates real confusion quickly.
-- Compose became the easiest way to describe the system honestly.
-- Persistent storage matters earlier than I expected.
-- A small self-hosted stack is enough to teach a lot about infrastructure.
-
-## Official Documentation
-
-- [Docker overview](https://docs.docker.com/get-started/docker-overview/)
-- [Docker volumes](https://docs.docker.com/engine/storage/volumes/)
-- [Docker Compose](https://docs.docker.com/compose/)
-
 ## Takeaways
 
 - Docker made the local AI lab repeatable enough to keep learning from.
 - The most important concepts were not advanced ones. They were images, containers, volumes, ports, and Compose.
 - Once those basics were clearer, debugging became calmer and more methodical.
+- Docker was most useful when I treated it as a way to reduce setup drift, not as a goal by itself.
+- Persistent storage mattered earlier than I expected.

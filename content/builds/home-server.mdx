@@ -64,7 +64,7 @@ The important point is that the supporting pieces are there to reduce operationa
 - backups reduce the cost of mistakes
 - documentation reduces the cost of forgetting
 
-## Key Decisions
+## Decisions
 
 - I chose modest hardware on purpose. The goal is to learn infrastructure and run small useful services, not to simulate a datacenter.
 - I use Docker because it makes service definitions easier to repeat, inspect, and rebuild.
@@ -73,7 +73,7 @@ The important point is that the supporting pieces are there to reduce operationa
 - I treat backups and documentation as core infrastructure. A service is not really "set up" if I cannot explain how to restore it or where its data lives.
 - I have tried to avoid stacking tools that overlap heavily, because each extra layer becomes another maintenance obligation.
 
-## Current Setup
+## Progress
 
 Right now the server is intentionally small:
 
@@ -95,7 +95,7 @@ This setup became the foundation for the [Local AI Lab](/builds/local-ai-lab) be
 
 Once those basics were in place, adding Ollama and `n8n` became a constrained extension of an existing system instead of a separate infrastructure problem.
 
-## What Worked
+What has worked so far:
 
 - Starting with modest infrastructure kept the system understandable.
 - Docker made it easier to recreate services instead of nursing fragile one-off installs.
@@ -104,7 +104,7 @@ Once those basics were in place, adding Ollama and `n8n` became a constrained ex
 - Backups changed the way I made decisions. I could experiment more calmly once I knew important data was not living in only one place.
 - Documentation paid off as soon as the second and third services were added.
 
-## What Was Difficult
+What still needs attention:
 
 - Reliability work is less visible than new-service work, so it is easy to postpone the boring but necessary parts.
 - Maintenance decisions are recurring, not one-time. Updates, restores, naming, and storage layout all need repeatable habits.
@@ -120,15 +120,7 @@ Once those basics were in place, adding Ollama and `n8n` became a constrained ex
 - Backups and documentation are not support tasks around the server. They are part of the server.
 - A useful home server needs a maintenance model, not just a deployment model.
 - Avoiding unnecessary complexity preserves time for the actual work the server is supposed to support.
-
-## Related Notes and Experiments
-
-- [Local AI Lab](/builds/local-ai-lab)
-- [Docker Basics](/notes/docker-basics)
-- [Qurio Note #001 - Building My First Local AI Lab](/notes/qurio-note-001-building-my-first-local-ai-lab)
-- [Local AI Lab 001: First n8n to Ollama Test](/experiments/local-ai-lab-001-first-n8n-ollama-test)
-- [Local AI Lab 002: First n8n to Ollama Workflow](/experiments/local-ai-lab-002-first-n8n-ollama-workflow)
-- [Local AI Lab 003: Summarizing Qurio Notes with Ollama and n8n](/experiments/local-ai-lab-003-summarizing-qurio-notes-with-ollama-and-n8n)
+- This build connects directly to [Local AI Lab](/builds/local-ai-lab), [Docker Basics](/notes/docker-basics), and [Qurio Note #001 - Building My First Local AI Lab](/notes/qurio-note-001-building-my-first-local-ai-lab).
 
 ## Next Steps
 

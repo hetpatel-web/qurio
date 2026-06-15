@@ -165,8 +165,6 @@ Together they answer the practical beginner questions:
 - How do I remove it?
 - What is active right now?
 
-### Local API
-
 Ollama exposes a local API, typically at:
 
 ```text
@@ -194,29 +192,16 @@ A minimal request looks like:
 
 This was the piece that made Ollama feel immediately useful in the lab, because it turned a local model into something other systems could actually integrate with.
 
-## Related Notes
+## Related Experiments
 
-- [Docker Basics](/notes/docker-basics)
-- [Learning by Building](/notes/learning-by-building)
-- [Qurio Note #001 - Building My First Local AI Lab](/notes/qurio-note-001-building-my-first-local-ai-lab)
-- [Local AI Lab](/builds/local-ai-lab)
-
-## Lessons Learned
-
-- Running AI locally is easier than I expected once the runtime layer is clear.
-- Models and runtimes are different concepts and should be treated separately.
-- Small models are better for learning than jumping straight to large ones.
-- A local API matters as much as the model itself when the goal is integration.
-- Docker and Ollama work well together because one manages services and the other manages models.
-
-## Official Documentation
-
-- [Ollama documentation](https://ollama.com/library)
-- [Ollama GitHub repository](https://github.com/ollama/ollama)
-- [Qwen documentation](https://qwenlm.github.io/)
+- [Local AI Lab 001: First n8n to Ollama Test](/experiments/local-ai-lab-001-first-n8n-ollama-test)
+- [Local AI Lab 002: First n8n to Ollama Workflow](/experiments/local-ai-lab-002-first-n8n-ollama-workflow)
+- [Local AI Lab 003: Summarizing Qurio Notes with Ollama and n8n](/experiments/local-ai-lab-003-summarizing-qurio-notes-with-ollama-and-n8n)
 
 ## Takeaways
 
 - Ollama is the runtime, not the intelligence.
 - The easiest way to understand it is by using a small local model and the API together.
 - Once that distinction is clear, building local AI workflows becomes much easier to reason about.
+- Running AI locally is easier than I expected once the runtime layer is clear.
+- Small models are better for learning than jumping straight to large ones.

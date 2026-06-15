@@ -117,11 +117,7 @@ Understanding data flow is one of the most important skills in `n8n`, because mo
 
 ## Practical Use
 
-My first useful workflow was simple:
-
-Goal:
-
-Send text to a locally running Ollama model and receive a response.
+My first useful workflow was simple: send text to a locally running Ollama model and receive a response.
 
 Workflow:
 
@@ -151,15 +147,16 @@ In Docker Compose, containers can communicate using service names instead of `lo
 
 This allowed the `n8n` container to communicate directly with the Ollama container.
 
-## Common Beginner Mistakes
+Common beginner mistakes showed up quickly:
 
-### Invalid JSON
-
-One missing quote or comma can break an API request.
-
-Always validate JSON before testing.
-
-### Incorrect Data Types
+- Invalid JSON:
+  One missing quote or comma can break an API request. Always validate JSON before testing.
+- Incorrect data types:
+  A string like `"false"` is not the same as a boolean `false`.
+- Testing too much at once:
+  When troubleshooting, test one node at a time and verify input, output, and data format before moving forward.
+- Skipping logs:
+  Logs often explain exactly what failed if I read the error message carefully before changing multiple things at once.
 
 Incorrect:
 
@@ -179,64 +176,16 @@ Correct:
 
 Boolean values should not be wrapped in quotation marks.
 
-### Testing Too Much At Once
-
-When troubleshooting, test one node at a time.
-
-Verify:
-
-* input
-* output
-* data format
-
-before moving forward.
-
-### Skipping Logs
-
-Logs often explain exactly what failed.
-
-Read the error message carefully before changing multiple things at once.
-
-## Related Notes
-
-* [Docker Basics](/notes/docker-basics)
-* [Ollama Basics](/notes/ollama-basics)
-* [Qurio Note #001 - Building My First Local AI Lab](/notes/qurio-note-001-building-my-first-local-ai-lab)
-
 ## Related Experiments
 
-* [Local AI Lab 001: First n8n to Ollama Test](/experiments/local-ai-lab-001-first-n8n-ollama-test)
-* [Local AI Lab 002: First n8n to Ollama Workflow](/experiments/local-ai-lab-002-first-n8n-ollama-workflow)
-
-## Lessons Learned
-
-* Automation is mostly moving data between systems.
-* APIs are the foundation of most workflows.
-* Small workflows are easier to debug.
-* Docker simplifies local deployments.
-* Local AI models can be treated like any other API service.
-* Understanding data flow is more important than memorizing nodes.
-
-## Official Documentation
-
-* [n8n documentation](https://docs.n8n.io/)
-* [n8n community forum](https://community.n8n.io/)
-* [Ollama documentation](https://ollama.com/)
-* [Docker documentation](https://docs.docker.com/)
+- [Local AI Lab 001: First n8n to Ollama Test](/experiments/local-ai-lab-001-first-n8n-ollama-test)
+- [Local AI Lab 002: First n8n to Ollama Workflow](/experiments/local-ai-lab-002-first-n8n-ollama-workflow)
+- [Local AI Lab 003: Summarizing Qurio Notes with Ollama and n8n](/experiments/local-ai-lab-003-summarizing-qurio-notes-with-ollama-and-n8n)
 
 ## Takeaways
 
-* `n8n` became easier once I stopped thinking about it as "magic automation" and started thinking about inputs, transformations, and outputs.
-* The most important beginner skill is tracing data flow between nodes.
-* Local AI fits naturally into `n8n` because Ollama behaves like any other HTTP service.
-
-## Next Experiment
-
-Create a workflow that accepts a note, sends it to Ollama for analysis, and automatically generates:
-
-* Summary
-* Key takeaways
-* Action items
-* Questions worth exploring
-
-This would create the foundation for an automated learning assistant.
+- `n8n` became easier once I stopped thinking about it as "magic automation" and started thinking about inputs, transformations, and outputs.
+- The most important beginner skill is tracing data flow between nodes.
+- Automation is mostly moving data between systems cleanly enough that the next step can use the result.
+- Small workflows are easier to debug than broad ones.
+- Local AI fits naturally into `n8n` because Ollama behaves like any other HTTP service.
