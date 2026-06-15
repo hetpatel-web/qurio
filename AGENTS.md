@@ -78,7 +78,41 @@ Allowed `status` values:
 - `paused`
 - `archived`
 
-Preferred structures:
+## Content Templates
+
+Use the templates in `content/templates/` as the starting point for new content entries.
+
+Template paths:
+
+- `content/templates/experiment-template.mdx`
+- `content/templates/note-template.mdx`
+- `content/templates/build-template.mdx`
+- `content/templates/journal-template.mdx`
+
+When creating a new content entry:
+
+1. Choose the correct template based on the content type.
+2. Copy the template structure into the new `.mdx` file.
+3. Fill in the required frontmatter:
+   - `title`
+   - `description`
+   - `date`
+   - `status`
+   - `tags`
+4. Use only allowed status values:
+   - `idea`
+   - `active`
+   - `complete`
+   - `paused`
+   - `archived`
+5. Preserve the Qurio learning loop:
+   - `Question → Experiment → Build → Document → Reflect → Improve`
+6. Keep the entry practical, honest, and useful.
+7. Avoid turning learning artifacts into polished marketing copy.
+
+The templates are the source of truth for content structure. If a content structure needs to change, update the relevant template first, then apply that structure to live content.
+
+Current template-aligned structures:
 
 ### Experiments
 
