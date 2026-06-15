@@ -5,7 +5,8 @@ import { getAllContent } from '@/lib/content';
 
 export const metadata: Metadata = {
   title: 'Experiments',
-  description: 'Experiments, tests, and small investigations documented through building.',
+  description:
+    'Focused tests that turn questions, constraints, and hypotheses into evidence through real attempts.',
 };
 
 export default async function ExperimentsPage() {
@@ -15,8 +16,8 @@ export default async function ExperimentsPage() {
     <div className="container page">
       <PageHeader
         eyebrow="Experiments"
-        title="Small tests with honest notes."
-        intro="Each experiment starts with a question, a constraint, or a hypothesis. The point is to learn fast and document what happened."
+        title="Focused tests that turn questions into evidence."
+        intro="Experiments are the shortest loop in Qurio. Each one starts with a question, a constraint, or a hypothesis, then records what happened clearly enough to guide the next attempt."
       />
       <div className="content-list">
         {experiments.map((experiment) => (

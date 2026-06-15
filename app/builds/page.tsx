@@ -5,7 +5,8 @@ import { getAllContent } from '@/lib/content';
 
 export const metadata: Metadata = {
   title: 'Builds',
-  description: 'Project write-ups, build logs, and infrastructure notes.',
+  description:
+    'Longer-running projects and systems developed across multiple sessions, with decisions and progress documented along the way.',
 };
 
 export default async function BuildsPage() {
@@ -15,8 +16,8 @@ export default async function BuildsPage() {
     <div className="container page">
       <PageHeader
         eyebrow="Builds"
-        title="Projects in progress and in practice."
-        intro="This section covers longer-running builds, infrastructure work, and project decisions that are easier to understand when written down."
+        title="Larger projects developed over time."
+        intro="Builds are where Qurio follows systems, projects, and infrastructure work across multiple sessions. They hold the longer arc: the problem, the approach, the decisions, the progress, and what changed while building."
       />
       <div className="content-list">
         {builds.map((build) => (

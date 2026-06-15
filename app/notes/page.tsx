@@ -5,7 +5,8 @@ import { getAllContent } from '@/lib/content';
 
 export const metadata: Metadata = {
   title: 'Notes',
-  description: 'Reading notes, reflections, and short ideas captured while learning by building.',
+  description:
+    'Durable ideas, explanations, and reusable references collected while turning curiosity into capability.',
 };
 
 export default async function NotesPage() {
@@ -15,8 +16,8 @@ export default async function NotesPage() {
     <div className="container page">
       <PageHeader
         eyebrow="Notes"
-        title="Thoughts worth keeping."
-        intro="Shorter notes for ideas, principles, and reflections that shape how I approach building and learning."
+        title="Durable ideas worth keeping."
+        intro="Notes are where Qurio keeps explanations, principles, and reusable references that stay useful beyond a single experiment. They help turn what was learned once into something easier to use again."
       />
       <div className="content-list">
         {notes.map((note) => (
