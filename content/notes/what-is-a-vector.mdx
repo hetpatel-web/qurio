@@ -1,0 +1,214 @@
+---
+title: "What Is a Vector?"
+description: "A beginner-friendly explanation of vectors as lists of numbers that computers can compare."
+date: 2026-06-18
+status: active
+tags:
+  - ai
+  - vectors
+  - embeddings
+  - semantic-search
+  - learning-systems
+---
+
+## Purpose
+
+Explain what a vector is in the context of embeddings and semantic search.
+
+This note keeps the idea simple and avoids going too deep into math.
+
+## Key Idea
+
+A vector is a list of numbers.
+
+In AI search, a vector is the number-based version of meaning.
+
+## Explanation
+
+In the previous note, I learned that an embedding turns text into numbers.
+
+The vector is the actual list of numbers that comes out of that process.
+
+Simple flow:
+
+```text
+Text
+↓
+Embedding model
+↓
+Vector
+```
+
+For example, this sentence:
+
+```text
+Building a daily learning routine
+```
+
+might become something like:
+
+```text
+[0.12, -0.45, 0.88, 0.03, -0.21, ...]
+```
+
+That list of numbers is the vector.
+
+I do not need to understand what every number means yet.
+
+The important idea is:
+
+```text
+The vector is the computer-readable version of the meaning.
+```
+
+## Simple Analogy
+
+Think of a vector like a profile made of scores.
+
+For example, a movie could be described like this:
+
+```text
+Action: 9
+Comedy: 2
+Drama: 6
+Sci-fi: 8
+Romance: 1
+```
+
+That can be written as a list of numbers:
+
+```text
+[9, 2, 6, 8, 1]
+```
+
+Another movie with a similar pattern is probably similar in style.
+
+A very different pattern probably represents a very different movie.
+
+Embeddings work in a similar way, except the categories are not simple labels like action or comedy.
+
+The embedding model creates many hidden meaning dimensions.
+
+## Why Vectors Matter
+
+Computers are good at comparing numbers.
+
+They are not naturally good at comparing human meaning.
+
+So instead of directly comparing two sentences, the system turns both into vectors.
+
+Example:
+
+```text
+Question:
+How do I stay consistent while learning?
+
+Note:
+Building a daily learning routine
+```
+
+The system converts both into vectors:
+
+```text
+Question vector → [0.14, -0.42, 0.81, ...]
+Note vector     → [0.12, -0.45, 0.88, ...]
+```
+
+Then it compares the number patterns.
+
+If the vectors are close, the meanings are probably close.
+
+## Connection To Embeddings
+
+Embedding and vector are closely related, but they are not exactly the same idea.
+
+```text
+Embedding = the process or representation that turns meaning into numbers
+Vector = the actual list of numbers
+```
+
+A simple way to remember it:
+
+```text
+The embedding model creates the vector.
+The vector stores the meaning pattern.
+Semantic search compares vectors.
+```
+
+## Connection To Semantic Search
+
+Semantic search works because stored notes and user questions can both be represented as vectors.
+
+Simple workflow:
+
+```text
+Stored note
+↓
+Vector
+
+User question
+↓
+Vector
+
+Compare vectors
+↓
+Return closest meaning match
+```
+
+This is how a system can find a useful note even when the user uses different words.
+
+## Qurio Example
+
+A Qurio note might be called:
+
+```text
+Building a daily learning routine
+```
+
+Later, someone might ask:
+
+```text
+How do I stay consistent while learning?
+```
+
+The words are different, but the meaning is close.
+
+If both pieces of text are converted into vectors, Qurio could compare them and return the right note.
+
+## Practical Use
+
+The practical takeaway is not that I need to understand advanced vector math right now.
+
+The practical takeaway is that vectors let computers compare meaning using numbers.
+
+This makes vectors one of the basic building blocks behind:
+
+- embeddings
+- semantic search
+- recommendation systems
+- AI memory
+- RAG
+- document search
+
+## Related Content
+
+- [Semantic Search Basics](/notes/semantic-search-basics)
+- [What Are Embeddings?](/notes/what-are-embeddings)
+- [Research Thinking Basics](/notes/research-thinking-basics)
+
+## Takeaways
+
+- A vector is a list of numbers.
+- In AI search, a vector can represent meaning.
+- Embedding models create vectors from text.
+- Similar meanings usually create similar vector patterns.
+- Semantic search works by comparing vectors.
+
+## Questions To Explore Next
+
+- How does the computer compare two vectors?
+- What is similarity search?
+- What is cosine similarity?
+- What is vector space?
+- How are vectors stored?
+- How does this connect to RAG?
