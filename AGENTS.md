@@ -57,6 +57,7 @@ Avoid changes that make Qurio feel like:
 - `content/journal/`: monthly reflection
 - `content/now/`: current focus snapshot
 - `content/templates/`: starting points for new entries
+- `docs/content-entry-playbook.md`: step-by-step workflow for creating or updating content entries
 - `docs/qurio-foundation.md`: concise source of truth
 - `docs/why-qurio-exists.md`: longer-form brand anchor
 
