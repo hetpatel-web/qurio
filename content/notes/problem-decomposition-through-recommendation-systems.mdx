@@ -1,0 +1,153 @@
+---
+title: "Problem Decomposition Through a Recommendation System"
+description: "What an outfit recommendation example revealed about decomposition, data modelling, scoring, feedback, and personalization."
+date: 2026-08-13
+status: active
+tags:
+  - problem-solving
+  - system-design
+  - data-modelling
+  - recommendation-systems
+  - machine-learning
+---
+
+## Purpose
+
+Document what I learned by breaking down a seemingly simple problem: recommending what someone should wear today.
+
+The exercise showed how a vague product idea can be decomposed into smaller problems, data structures, business rules, and eventually a recommendation system.
+
+## Key Idea
+
+Complex software problems become easier to reason about when they are decomposed into smaller decisions with clear inputs, data, constraints, and outputs.
+
+The goal is not to start with code. The goal is to first understand what the system actually needs to know and decide.
+
+## Explanation
+
+The original problem was simple:
+
+> Recommend what someone should wear today.
+
+Breaking it down exposed several smaller problems:
+
+1. Categorize available clothing.
+2. Check weather conditions.
+3. Determine the occasion, such as work, travel, or a gathering.
+4. Filter out unsuitable clothing.
+5. Generate valid outfit combinations.
+6. Track previously worn outfits.
+7. Score the remaining combinations.
+8. Recommend the strongest option.
+
+This produces a useful flow:
+
+**Inputs → Filtering → Combination Generation → Historical Constraints → Scoring → Recommendation**
+
+### Data Modelling
+
+The exercise also showed that application logic depends on having a clear data model.
+
+A `ClothingItem` represents what an item is and can contain attributes such as type, colour, formality, warmth, and rain suitability.
+
+An `Outfit` represents a specific combination of clothing items.
+
+Because one outfit contains many clothing items and one clothing item can appear in many outfits, this is a many-to-many relationship. A junction structure such as `OutfitItem` can connect them.
+
+`WearHistory` records what happened over time. Instead of storing a `lastWornDate` directly on a clothing item, the system can derive that information from historical records.
+
+This reinforced an important distinction:
+
+- `ClothingItem` = what something is
+- `WearHistory` = what happened
+- `last worn` = information derived from history
+
+Historical records also need to remain accurate. If an outfit changes after it has been worn, the historical record could become incorrect. A cleaner approach is to treat a changed combination as a new outfit or version rather than modifying the historical one.
+
+### Business Rules and Scoring
+
+A valid outfit is not automatically the best outfit.
+
+For example, on a cold rainy workday, the system may consider:
+
+- rain protection
+- cold protection
+- work suitability
+- user preferences
+- how recently the outfit was worn
+- style compatibility
+
+Not every factor should have the same importance in every situation. Rain protection matters much more when it is raining than when it is sunny.
+
+This leads to weighted scoring, where context changes the importance of different criteria.
+
+### Rules and Machine Learning
+
+A hybrid approach makes more sense than using machine learning for everything.
+
+Known constraints can remain deterministic:
+
+- weather suitability
+- required dress code
+- clothing availability
+
+Personalization can come from user preferences and observed behaviour.
+
+Useful feedback signals include:
+
+- like or dislike
+- outfit rating
+- comments
+- whether the recommendation was accepted
+- whether one item was replaced
+- what alternative was actually worn
+
+Behaviour can reveal preferences that the user never explicitly stated.
+
+For example, if someone usually replaces formal shoes with sneakers for normal workdays but always chooses formal shoes for important meetings, the system should learn a context-dependent preference rather than a single global rule.
+
+### Exploration vs. Exploitation
+
+Personalization creates another problem: if the system always recommends what it already knows the user likes, recommendations can become repetitive.
+
+This is the exploration-versus-exploitation tradeoff:
+
+- **Exploitation:** recommend combinations already known to work.
+- **Exploration:** occasionally introduce new combinations to discover additional preferences.
+
+The balance should also depend on context. An important client meeting may favour a proven recommendation, while a low-stakes casual day can tolerate more experimentation.
+
+## Practical Use
+
+Before implementing a feature, first write the decision flow in plain language.
+
+For a recommendation system, ask:
+
+- What are the inputs?
+- What entities need to exist?
+- Which data is intrinsic and which is historical?
+- What should be filtered out completely?
+- What remains eligible for scoring?
+- Which criteria change with context?
+- What feedback should be collected?
+- Which behaviours should remain deterministic?
+- Which behaviours could eventually be learned?
+
+This should make the eventual code, database schema, and API boundaries easier to design.
+
+A useful next exercise would be to convert this conceptual model into a small schema and a rule-based recommendation function before introducing machine learning.
+
+## Related Experiments
+
+- [Qurio Site](/builds/qurio-site)
+
+## Takeaways
+
+- Start by decomposing the problem, not by writing code.
+- Good data modelling makes business logic easier to express.
+- Many-to-many relationships often need an explicit junction structure.
+- Historical truth should not be silently changed when current data changes.
+- Deterministic rules are useful when constraints are known; learning is useful where preferences are uncertain.
+- User behaviour can provide stronger preference signals than explicit ratings alone.
+- Personalization must account for context rather than assuming one global preference.
+- Recommendation systems need a balance between exploiting known favourites and exploring new possibilities.
