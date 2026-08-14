@@ -1,6 +1,6 @@
 ---
 title: "Problem Decomposition Through a Recommendation System"
-description: "What an outfit recommendation example revealed about decomposition, data modelling, scoring, feedback, and personalization."
+description: "What an outfit recommendation example revealed about decomposition, data modelling, scoring, feedback, personalization, and service architecture."
 date: 2026-08-13
 status: active
 tags:
@@ -19,9 +19,9 @@ The exercise showed how a vague product idea can be decomposed into smaller prob
 
 ## Key Idea
 
-Complex software problems become easier to reason about when they are decomposed into smaller decisions with clear inputs, data, constraints, and outputs.
+Complex software problems become easier to reason about when they are decomposed into smaller decisions with clear inputs, data, constraints, outputs, and ownership boundaries.
 
-The goal is not to start with code. The goal is to first understand what the system actually needs to know and decide.
+The goal is not to start with code. The goal is to first understand what the system actually needs to know, decide, and delegate.
 
 ## Explanation
 
@@ -117,6 +117,202 @@ This is the exploration-versus-exploitation tradeoff:
 
 The balance should also depend on context. An important client meeting may favour a proven recommendation, while a low-stakes casual day can tolerate more experimentation.
 
+### Context Acquisition and Confidence
+
+The recommendation flow should begin by gathering context from the most reliable available sources.
+
+Examples include:
+
+- linked calendar for meetings, events, or travel
+- weather data for temperature and precipitation
+- time and date for season or weekday context
+- saved user preferences
+- direct user questions when important context is still missing
+
+A useful design rule is:
+
+**Infer when confidence is high. Ask when uncertainty could materially change the decision.**
+
+For example, a calendar entry called `Wedding Reception` may provide enough context on its own, while an entry called `Dinner` may require a follow-up question.
+
+### Hard Constraints Before Ranking
+
+The system should not immediately score every possible outfit.
+
+It should first remove combinations that are not acceptable.
+
+This creates a two-stage pipeline:
+
+1. **Filtering**
+   - remove weather-inappropriate items
+   - remove items that violate dress-code requirements
+   - remove dirty or unavailable items
+   - remove invalid combinations
+   - apply required repetition constraints
+2. **Ranking**
+   - score remaining combinations
+   - apply user preferences
+   - apply context-specific priorities
+   - consider history and novelty
+   - return the strongest candidates
+
+This reinforced another rule:
+
+**Hard constraints first, soft preferences second.**
+
+### Graceful Degradation
+
+Filtering may sometimes leave no perfect recommendation.
+
+Instead of failing, the system can relax soft constraints in a deliberate order while preserving hard constraints.
+
+For example:
+
+1. Preserve required weather and safety constraints.
+2. Preserve explicit user hard constraints.
+3. Relax repetition avoidance.
+4. Relax style preferences.
+5. Relax formality only when the context allows it.
+6. Return the best available option and explain the compromise.
+
+This is graceful degradation: the system remains useful even when ideal conditions are unavailable.
+
+### Modules and Services
+
+The recommendation system can be divided into modules based on responsibility.
+
+Possible modules include:
+
+- `Wardrobe` for clothing inventory and current item state
+- `Context` for weather, calendar, and occasion information
+- `Recommendation` for filtering, scoring, ranking, and fallback logic
+- `History` for worn outfits and feedback events
+- `Preference` for explicit and learned user preferences
+
+A useful mental model is:
+
+**Module = a boundary around a responsibility.**
+
+**Service = business logic that performs work inside or across those boundaries.**
+
+Examples:
+
+`ContextService`
+- get weather
+- get calendar events
+- determine occasion
+- identify missing context
+
+`WardrobeService`
+- add or update clothing items
+- categorize items
+- get available items
+- mark items clean or dirty
+
+`HistoryService`
+- record an outfit being worn
+- record ratings or comments
+- find recently worn items
+- calculate last-worn information
+
+`PreferenceService`
+- get user preferences
+- update explicit preferences
+- update preferences from feedback
+- expose constraint priorities
+
+`RecommendationService`
+- filter invalid outfits
+- calculate outfit scores
+- rank candidates
+- relax soft constraints
+- generate recommendations
+
+The RecommendationService can orchestrate the other services without owning their data.
+
+### Separation of Concerns
+
+A service should not bypass another domain's logic and reach directly into its storage unless there is a strong architectural reason.
+
+For example, `RecommendationService` should ask `HistoryService` for recent wear information rather than directly querying history tables itself.
+
+This keeps responsibility clear and reduces coupling.
+
+The system becomes easier to test and maintain because each service can evolve behind a stable interface.
+
+### Service, Repository, and Database Layers
+
+Business services should not usually contain database-specific logic.
+
+A common backend flow is:
+
+**Controller → Service → Repository → Database**
+
+Each layer has a different responsibility:
+
+- **Controller:** transport and request handling
+- **Service:** business logic and business validity
+- **Repository:** data access and persistence operations
+- **Database:** storage and structural integrity
+
+For example:
+
+`WardrobeService.getAvailableItems()` may call `WardrobeRepository.findAvailableItems()`, which performs the actual database query.
+
+This separation means the service can focus on what the application needs while the repository focuses on how the data is stored.
+
+### Validation Across Layers
+
+Validation can happen at multiple layers because different layers protect different concerns.
+
+The service layer protects business validity.
+
+Examples:
+
+- whether an action is allowed in the current context
+- whether an outfit is appropriate for an important meeting
+- whether a user has exceeded an application-level limit
+
+The database protects data integrity.
+
+Examples:
+
+- required fields cannot be null
+- scores cannot contain structurally invalid values
+- foreign keys must reference valid records
+
+Some rules belong in both layers.
+
+For example, a negative warmth score can be rejected by the service for a clear user-facing error and also blocked by a database constraint as a final safety net.
+
+A useful distinction is:
+
+**Database constraint = Can this data exist?**
+
+**Service validation = Is this action valid in this situation?**
+
+### Controller vs. Service
+
+The controller owns the API boundary, not the recommendation logic.
+
+For a request such as `POST /recommendations`, the controller can:
+
+- receive the request
+- validate required request fields and basic types
+- call the RecommendationService
+- translate the result into an HTTP response
+
+The RecommendationService should handle the actual decision-making.
+
+Similarly, if a request contains an `outfitId`, the controller can check that the field exists and has the correct shape, while the service determines whether that outfit exists for the user and whether the requested action is allowed.
+
+This gives a useful summary:
+
+- **Controller = request validity**
+- **Service = business validity**
+- **Repository = persistence**
+- **Database = integrity**
+
 ## Practical Use
 
 Before implementing a feature, first write the decision flow in plain language.
@@ -132,10 +328,14 @@ For a recommendation system, ask:
 - What feedback should be collected?
 - Which behaviours should remain deterministic?
 - Which behaviours could eventually be learned?
+- Which module owns each responsibility?
+- Which service owns each business rule?
+- Which operations belong in repositories rather than services?
+- Which constraints protect data integrity and which protect business validity?
 
-This should make the eventual code, database schema, and API boundaries easier to design.
+This should make the eventual code, database schema, API boundaries, and tests easier to design.
 
-A useful next exercise would be to convert this conceptual model into a small schema and a rule-based recommendation function before introducing machine learning.
+A useful next exercise would be to convert this conceptual architecture into a small schema and a rule-based recommendation flow before introducing machine learning.
 
 ## Related Experiments
 
@@ -151,3 +351,10 @@ A useful next exercise would be to convert this conceptual model into a small sc
 - User behaviour can provide stronger preference signals than explicit ratings alone.
 - Personalization must account for context rather than assuming one global preference.
 - Recommendation systems need a balance between exploiting known favourites and exploring new possibilities.
+- Infer context when confidence is high and ask when ambiguity changes the decision.
+- Filter hard constraints before ranking soft preferences.
+- Use graceful degradation when no perfect solution exists.
+- Separate modules by responsibility and services by business ownership.
+- Keep persistence logic in repositories rather than business services.
+- Treat controllers, services, repositories, and databases as distinct architectural concerns.
+- Validate business rules in services and protect structural integrity in the database.
