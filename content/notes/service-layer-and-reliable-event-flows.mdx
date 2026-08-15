@@ -1,0 +1,322 @@
+---
+title: "Service Layers and Reliable Event Flows"
+description: "What an OutfitGuru architecture exercise taught me about service boundaries, idempotency, transactions, domain events, eventual consistency, and the transactional outbox pattern."
+date: 2026-08-14
+status: active
+tags:
+  - system-design
+  - service-architecture
+  - distributed-systems
+  - idempotency
+  - transactions
+---
+
+## Purpose
+
+Document the architecture concepts I learned while extending the OutfitGuru recommendation-system exercise from service boundaries into reliable write and event flows.
+
+The goal was not to design a production-scale distributed system immediately. It was to understand why responsibilities are separated, where failures can occur, and how a system can remain correct when requests or events are retried.
+
+## Key Idea
+
+A reliable application is not only about getting the happy path right.
+
+It should make ownership clear, protect important state changes with transactions, isolate secondary failures from primary user actions, and assume that requests and events may be delivered more than once.
+
+A useful mental model is:
+
+**Clear ownership → atomic writes → durable event intent → retries → idempotent processing**
+
+## Explanation
+
+### Service Responsibilities
+
+The recommendation exercise produced several service boundaries:
+
+- `WardrobeService` answers what the user owns and what is currently usable.
+- `ContextService` provides situational context such as occasion.
+- `WeatherService` provides normalized weather conditions.
+- `PreferenceService` provides explicit and learned likes or dislikes.
+- `HistoryService` records what was worn and what happened over time.
+- `FeedbackService` receives and structures user feedback.
+- `RecommendationService` combines these signals and decides what should be recommended for the current situation.
+
+This clarified an important distinction:
+
+**A supporting service should expose facts or domain state. The RecommendationService should make the final recommendation decision.**
+
+For example, `PreferenceService` can report that a user strongly dislikes a pair of formal shoes. It should not automatically remove those shoes if they are the only formal option for an important meeting. The recommendation layer has to evaluate the tradeoff in context.
+
+### Hard Constraints and Ranking Signals
+
+Not every rule should eliminate an item.
+
+Hard constraints answer whether something can reasonably be considered at all.
+
+Examples:
+
+- item is dirty
+- item is unavailable
+- item cannot be worn
+
+Soft signals influence which valid option should rank higher.
+
+Examples:
+
+- rain resistance
+- warmth
+- formality
+- user preference
+- recent wear
+
+This creates a useful distinction:
+
+**WardrobeService = What can the user wear?**
+
+**RecommendationService = What should the user wear in this situation?**
+
+Weather is often a ranking signal rather than a reason to remove an item entirely. For an important meeting during heavy rain, formality may remain the primary objective while rain protection is satisfied through an additional layer such as a coat.
+
+### Feedback, Preference, and History
+
+A low outfit rating and a comment such as `The coat worked, but I hated these shoes` contains several different kinds of information.
+
+`FeedbackService` should receive, validate, structure, and persist the feedback.
+
+`PreferenceService` should interpret the relevant signal and update the preference model for the shoes.
+
+`HistoryService` should preserve what was actually worn and the outcome.
+
+The key distinction is:
+
+**Feedback is evidence. Preference is an interpretation of that evidence.**
+
+One negative rating should not necessarily become a permanent `never recommend` rule. Repeated evidence can increase confidence in a negative preference while leaving the final contextual decision to `RecommendationService`.
+
+### Wardrobe Gaps as Durable State
+
+The exercise exposed another domain concept: a wardrobe gap.
+
+If the user repeatedly dislikes their only formal shoes, the system should not simply rediscover the same conflict every time. It can record a durable gap such as:
+
+```text
+category: formal_footwear
+reason: only available formal shoes have strong negative preference
+status: open
+priority: high
+```
+
+A wardrobe gap has a lifecycle, so storing it makes more sense than recalculating it only during recommendation requests.
+
+A future `WardrobeGapService` could own that lifecycle:
+
+- detect a gap
+- keep it open
+- re-evaluate it when relevant wardrobe state changes
+- mark it resolved when the condition no longer exists
+
+This reinforced another rule:
+
+**The service that owns a business concept should usually own that concept's lifecycle.**
+
+### Domain Events and Loose Coupling
+
+When a new clothing item is added, several parts of the application may care:
+
+- wardrobe-gap logic may need to re-evaluate an open gap
+- analytics may record wardrobe growth
+- future consumers may react for other reasons
+
+Having `WardrobeService` directly call every downstream service would create growing coupling.
+
+A domain event such as:
+
+```text
+ClothingItemAdded
+```
+
+allows interested consumers to react without making `WardrobeService` know about all of them.
+
+For an MVP, this does not require Kafka, RabbitMQ, or another large message-broker dependency. An in-process domain-event mechanism can preserve the architectural boundary until a stronger infrastructure need exists.
+
+### Primary Actions and Secondary Side Effects
+
+If a clothing item is successfully saved but wardrobe-gap processing fails, the user should not have to add the clothing item again.
+
+The clothing write is the primary user action.
+
+Gap re-evaluation is a secondary side effect.
+
+This means failures should be isolated where possible:
+
+```text
+Add clothing item -> success
+Publish ClothingItemAdded -> retry if needed
+WardrobeGapService -> process separately
+```
+
+The system may temporarily contain slightly stale secondary state while still preserving the successful primary action.
+
+This is an example of **eventual consistency**.
+
+### Idempotency
+
+Retries introduce another problem: the same request or event may arrive more than once.
+
+An operation is idempotent when processing it repeatedly has the same final effect as processing it once.
+
+For an event consumer, repeated delivery of:
+
+```text
+ClothingItemAdded(event_id=123)
+```
+
+should not apply the same business change three times.
+
+A consumer can store processed events using a structure such as:
+
+```text
+processed_events
+- event_id
+- consumer_name
+- processed_at
+```
+
+The `consumer_name` matters because multiple different consumers may legitimately process the same event. The rule becomes:
+
+**same event + same consumer = process once**
+
+**same event + different consumer = allowed**
+
+Idempotency also matters at the API boundary. If a user taps `Add to wardrobe` twice or a network retry resends the request, the frontend can disable repeat interaction while the request is pending, but the backend must still protect itself.
+
+An API idempotency key allows the server to recognize a repeated logical request and return the original result instead of running the business operation again.
+
+### Transactions and Atomicity
+
+Suppose the clothing item is created successfully but the idempotency record fails to save. A retry could then create a duplicate clothing item because the system has no durable record of the first request.
+
+A database transaction can group the required writes:
+
+```text
+BEGIN
+1. create clothing item
+2. save idempotency result
+COMMIT
+```
+
+If one required operation fails, the transaction rolls back.
+
+The important property is **atomicity**:
+
+**Either all required operations succeed, or none of them do.**
+
+For consumer processing, the business change and processed-event record should also ideally share a transaction. Otherwise two workers could both observe that an event has not been processed and both apply the update.
+
+### The Transactional Outbox Pattern
+
+A normal database transaction cannot usually guarantee both a database write and a publish to an external message broker.
+
+This creates a failure window:
+
+```text
+Database commit: success
+Message publish: failure
+```
+
+The business state exists, but downstream consumers never receive the event.
+
+The transactional outbox pattern stores the intent to publish inside the same database transaction as the business write:
+
+```text
+BEGIN
+1. create clothing item
+2. save idempotency result
+3. insert ClothingItemAdded into outbox
+COMMIT
+```
+
+A separate publisher then reads unpublished outbox records, publishes them, and marks them complete.
+
+If publishing fails, the outbox record remains available for retry.
+
+If the publisher succeeds but crashes before marking the outbox record complete, the event may be published again. This is why the receiving consumer must still be idempotent.
+
+The full reliability chain becomes:
+
+```text
+Database transaction
+-> Outbox
+-> Retryable publisher
+-> Possible duplicate delivery
+-> Idempotent consumer
+```
+
+### End-to-End Clothing Addition Flow
+
+The resulting design exercise produced this conceptual flow:
+
+```text
+UI
+-> POST /wardrobe/items + idempotency key
+-> API/controller checks idempotency state
+   -> previous request: return previous result
+   -> new request: continue
+-> application/service layer begins use case
+-> WardrobeService applies business rules
+-> WardrobeRepository persists clothing item
+-> idempotency result is persisted
+-> ClothingItemAdded is persisted to outbox
+-> transaction commits
+```
+
+Then asynchronously:
+
+```text
+Outbox publisher
+-> publishes ClothingItemAdded
+-> WardrobeGapService receives event
+-> checks processed_events
+-> re-evaluates relevant wardrobe gap
+-> updates gap and records processed event atomically
+-> commit
+```
+
+This is a conceptual target rather than a claim that OutfitGuru currently implements all of these components.
+
+## Practical Use
+
+When designing a write flow with side effects, ask:
+
+- What is the primary user action?
+- Which operations must succeed or fail together?
+- Which secondary actions can happen later?
+- What happens if a request is retried?
+- What happens if an event is delivered twice?
+- Which service owns each business concept?
+- Can a downstream failure force the user to repeat a successful action?
+- Is the event-publishing intent durable if the process crashes?
+- Can each consumer safely process the same event more than once?
+
+Start with the simplest architecture that answers the current product need. Add queues, workers, or distributed infrastructure only when the product actually needs them.
+
+## Related Experiments
+
+- [Problem Decomposition Through a Recommendation System](/notes/problem-decomposition-through-recommendation-systems)
+- [Qurio Site](/builds/qurio-site)
+
+## Takeaways
+
+- Supporting services expose facts and domain state; orchestration services make contextual decisions.
+- Hard constraints eliminate invalid choices; soft signals influence ranking.
+- Feedback is evidence, while preferences are interpretations built from evidence.
+- Durable domain concepts such as wardrobe gaps should have explicit ownership and lifecycle.
+- Domain events can reduce coupling when several components need to react to the same change.
+- Do not make secondary processing failures unnecessarily invalidate a successful primary user action.
+- Eventual consistency is acceptable when temporary stale state is understood and recoverable.
+- Frontend duplicate prevention improves UX but does not replace backend idempotency.
+- Idempotency should exist wherever retries can repeat side effects.
+- Transactions protect operations that must succeed or fail together.
+- A transactional outbox makes event-publishing intent durable alongside the business write.
+- At-least-once delivery means consumers must expect duplicate events.
+- Reliability patterns should be introduced to solve real failure modes, not simply because they exist.
