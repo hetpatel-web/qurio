@@ -1,0 +1,213 @@
+---
+title: "Dependency Injection, Interfaces, and Composition Roots"
+description: "A practical note on making service dependencies explicit with Python protocols, constructor injection, and application-level wiring."
+date: 2026-08-16
+status: active
+tags:
+  - dependency-injection
+  - software-architecture
+  - python
+  - interfaces
+  - service-design
+---
+
+## Purpose
+
+Document what I learned while thinking through how services should depend on and collaborate with each other.
+
+The goal is to make service architecture easier to understand, change, and test without hiding dependencies inside a large application object.
+
+## Key Idea
+
+A service should receive the collaborators it needs through its constructor, depend on small contracts instead of concrete implementations, and leave object creation to a composition root near application startup.
+
+This makes dependencies visible and keeps business logic separate from infrastructure wiring.
+
+## Explanation
+
+### Classes and Instances
+
+A class defines the structure and behaviour that objects of that type can have.
+
+An instance is one concrete object created from the class.
+
+For example:
+
+```python
+class WeatherClient:
+    def get_forecast(self, location: str) -> str:
+        return "rain"
+
+
+weather_client = WeatherClient()
+```
+
+`WeatherClient` is the class. `weather_client` is an instance of that class.
+
+### `__init__` and `self`
+
+Python calls `__init__` when a new instance is created. It is commonly used to give the instance the state and dependencies it needs.
+
+`self` refers to the current instance. Assigning a value to `self.weather_service` makes that value available to other methods on the same object.
+
+```python
+class RecommendationService:
+    def __init__(self, weather_service):
+        self.weather_service = weather_service
+```
+
+The constructor makes it clear that `RecommendationService` cannot do its work without a weather service.
+
+### Constructor Injection and Dependency Injection
+
+A dependency is another object that a class needs in order to do its job.
+
+Constructor injection means passing those dependencies into `__init__`:
+
+```python
+class RecommendationService:
+    def __init__(
+        self,
+        wardrobe_service,
+        weather_service,
+        preference_service,
+    ):
+        self.wardrobe_service = wardrobe_service
+        self.weather_service = weather_service
+        self.preference_service = preference_service
+```
+
+This is a form of dependency injection. The service receives its collaborators from outside instead of constructing them internally.
+
+If `RecommendationService` created its own database-backed wardrobe service and HTTP weather client, it would be tied to those exact implementations. Passing them in keeps the recommendation logic more loosely coupled.
+
+### Interfaces and Contracts
+
+An interface or contract describes the behaviour a collaborator must provide.
+
+The important question is not:
+
+> Which concrete class was passed in?
+
+It is:
+
+> Can this object perform the operations this service needs?
+
+Depending on a narrow contract allows infrastructure to change without forcing the business service to change with it.
+
+### Python `Protocol` and Structural Typing
+
+Python's `Protocol` can express a contract through type hints:
+
+```python
+from typing import Protocol
+
+
+class WeatherService(Protocol):
+    def get_forecast(self, location: str) -> str:
+        ...
+
+
+class RecommendationService:
+    def __init__(self, weather_service: WeatherService):
+        self.weather_service = weather_service
+```
+
+A concrete class does not need to inherit from `WeatherService`. If it provides a compatible `get_forecast` method, static type checkers can treat it as satisfying the protocol.
+
+This is structural typing: compatibility is based on the object's shape and behaviour rather than an explicit inheritance relationship.
+
+Protocols do not perform the dependency injection. They describe what a valid dependency looks like. The constructor is where the dependency is received.
+
+### Composition Root
+
+A composition root is the place where concrete implementations are created and connected.
+
+It usually lives near application startup:
+
+```python
+weather_service = ApiWeatherService()
+wardrobe_service = DatabaseWardrobeService()
+preference_service = DatabasePreferenceService()
+
+recommendation_service = RecommendationService(
+    wardrobe_service=wardrobe_service,
+    weather_service=weather_service,
+    preference_service=preference_service,
+)
+```
+
+The composition root knows about concrete infrastructure. `RecommendationService` only knows about the contracts it needs.
+
+This gives object creation one visible home instead of scattering it throughout business logic.
+
+### Why a Giant `AppService` Is Usually a Poor Abstraction
+
+A single `AppService` that stores every service can become a service locator: classes receive the large container and pull dependencies from it whenever they need them.
+
+That approach hides a class's real dependencies.
+
+A constructor such as this is explicit:
+
+```python
+RecommendationService(weather_service, wardrobe_service)
+```
+
+A constructor such as this is vague:
+
+```python
+RecommendationService(app_service)
+```
+
+The second version makes it harder to see what the recommendation service uses, easier to reach across unrelated boundaries, and more difficult to replace only one collaborator during testing.
+
+A small application object can still be useful at the composition root for startup or lifecycle management. The problem appears when business services use it as a global bag of dependencies.
+
+### Too Many Dependencies as a Design Smell
+
+A long constructor is not automatically wrong. An orchestration service may legitimately coordinate several collaborators.
+
+However, too many dependencies can signal that the class:
+
+- owns more than one responsibility
+- mixes orchestration with domain logic
+- reaches across too many module boundaries
+- needs smaller services or a more focused abstraction
+
+The constructor acts as useful design feedback. When the dependency list becomes difficult to explain, the service boundary is worth reviewing.
+
+## Practical Use
+
+For an outfit recommendation system, `RecommendationService` can depend on abstractions such as:
+
+- `WardrobeService` for available clothing
+- `WeatherService` for current conditions
+- `PreferenceService` for user constraints and preferences
+
+Concrete database repositories, API clients, and service implementations can be wired near application startup and passed into the recommendation service.
+
+When designing a service, ask:
+
+- What work does this service own?
+- Which collaborators does it actually need?
+- Can those dependencies be passed through the constructor?
+- What is the smallest useful contract for each dependency?
+- Where are the concrete implementations created?
+- Does the constructor reveal that the service has too many responsibilities?
+
+## Related Experiments
+
+- [Problem Decomposition Through a Recommendation System](/notes/problem-decomposition-through-recommendation-systems)
+
+## Takeaways
+
+- A class defines behaviour; an instance is a concrete object created from that class.
+- `__init__` prepares a new instance, and `self` refers to that instance.
+- Constructor injection makes dependencies explicit.
+- Dependency injection reduces coupling by moving object creation outside business services.
+- Interfaces and protocols describe required behaviour without forcing a concrete implementation.
+- Python protocols support structural typing.
+- A composition root wires concrete implementations near application startup.
+- A giant `AppService` or service locator usually hides dependencies and weakens boundaries.
+- Too many constructor dependencies can reveal an overly broad service.
+- The next step is to unit test `RecommendationService` with fake dependencies; that exercise has not been completed yet.
